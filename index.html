@@ -104,26 +104,41 @@
         </section>
 
 
-        <!-- ================= PANTALLA 2: TABLERO DE JUEGO (PROYECTOR) ================= -->
+        <!-- ================= PANTALLA 2 (NUEVA): INDEPENDIENTE DEL CÓDIGO QR ================= -->
+        <section id="qr-screen" class="hidden w-full max-w-2xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-24 -top-24 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <span class="text-xs font-black uppercase text-red-500 tracking-widest tech-font bg-red-500/10 px-4 py-1.5 rounded-full border border-red-500/20">
+                Sincronización de Dispositivos Móviles
+            </span>
+            
+            <h3 class="text-3xl font-black text-white mt-6 mb-2">Pulsadores en Tiempo Real</h3>
+            <p class="text-slate-400 text-xs max-w-md mx-auto mb-6">
+                Escaneen el código QR para convertir sus celulares en pulsadores. Seleccionen su equipo al ingresar.
+            </p>
+
+            <div class="bg-white p-4 rounded-3xl inline-block mb-4 shadow-inner">
+                <img id="qr-code-img" src="" alt="Código QR de Conexión" class="w-56 h-56 mx-auto">
+            </div>
+
+            <div class="text-sm text-slate-300 font-semibold mb-8">
+                PIN de la Sesión: <span id="session-pin-text" class="text-red-400 font-mono font-bold text-lg tracking-widest bg-slate-950 px-3 py-1 rounded border border-slate-800 ml-1">0000</span>
+            </div>
+
+            <div class="flex justify-center border-t border-slate-800/80 pt-6">
+                <button onclick="goToGameScreen()" class="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold rounded-xl transition duration-150 transform hover:-translate-y-1 active:translate-y-0 shadow-lg shadow-red-950/50 uppercase tracking-wider cursor-pointer">
+                    Iniciar Duelo y Ver Preguntas ⚔️
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= PANTALLA 3: TABLERO DE JUEGO (PROYECTOR) ================= -->
         <section id="game-screen" class="hidden w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <!-- COLUMNA IZQUIERDA: CONTROLES DEL DOCENTE, QR Y MARCADOR (4/12 col) -->
+            <!-- COLUMNA IZQUIERDA: CONTROLES DE MARCADOR Y FINALIZACIÓN (4/12 col) -->
             <div class="lg:col-span-4 flex flex-col gap-6">
                 
-                <!-- Tarjeta del Código QR -->
-                <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-3xl text-center shadow-lg">
-                    <h3 class="text-xs font-black uppercase text-red-500 tracking-widest tech-font mb-4">Sincronizar Pulsadores Móviles</h3>
-                    <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-inner">
-                        <img id="qr-code-img" src="" alt="Código QR de Conexión" class="w-44 h-44 mx-auto">
-                    </div>
-                    <div class="text-xs text-slate-400 mt-2 font-semibold">
-                        PIN de la Sesión: <span id="session-pin-text" class="text-red-400 font-mono font-bold text-sm tracking-widest bg-slate-950 px-2 py-0.5 rounded border border-slate-800 ml-1">0000</span>
-                    </div>
-                    <p class="text-[10px] text-slate-500 mt-2">
-                        Escanea el código para transformar tu celular en el pulsador del juego en tiempo real.
-                    </p>
-                </div>
-
                 <!-- Scoreboard Dinámico de los 4 Equipos -->
                 <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-3xl shadow-lg">
                     <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
@@ -135,7 +150,7 @@
                         <!-- Equipo 1 -->
                         <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
                             <div>
-                                <span class="text-xs font-black text-red-400 uppercase tracking-wider block">Equipo 1</span>
+                                <span class="text-[10px] font-black text-red-400 uppercase tracking-wider block">Equipo 1</span>
                                 <span id="score-name-t1" class="text-sm font-extrabold text-slate-200">Oros</span>
                             </div>
                             <div class="flex items-center gap-3">
@@ -148,7 +163,7 @@
                         <!-- Equipo 2 -->
                         <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
                             <div>
-                                <span class="text-xs font-black text-blue-400 uppercase tracking-wider block">Equipo 2</span>
+                                <span class="text-[10px] font-black text-blue-400 uppercase tracking-wider block">Equipo 2</span>
                                 <span id="score-name-t2" class="text-sm font-extrabold text-slate-200">Copas</span>
                             </div>
                             <div class="flex items-center gap-3">
@@ -161,7 +176,7 @@
                         <!-- Equipo 3 -->
                         <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
                             <div>
-                                <span class="text-xs font-black text-emerald-400 uppercase tracking-wider block">Equipo 3</span>
+                                <span class="text-[10px] font-black text-emerald-400 uppercase tracking-wider block">Equipo 3</span>
                                 <span id="score-name-t3" class="text-sm font-extrabold text-slate-200">Espadas</span>
                             </div>
                             <div class="flex items-center gap-3">
@@ -174,7 +189,7 @@
                         <!-- Equipo 4 -->
                         <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
                             <div>
-                                <span class="text-xs font-black text-amber-400 uppercase tracking-wider block">Equipo 4</span>
+                                <span class="text-[10px] font-black text-amber-400 uppercase tracking-wider block">Equipo 4</span>
                                 <span id="score-name-t4" class="text-sm font-extrabold text-slate-200">Bastos</span>
                             </div>
                             <div class="flex items-center gap-3">
@@ -219,9 +234,9 @@
                     <div class="flex gap-2 w-full sm:w-auto">
                         <!-- Registrar Pulsación Manual -->
                         <div id="manual-buzzers-container" class="flex gap-2">
-                            <!-- Se inyectan dinámicamente con las etiquetas de los equipos -->
+                            <!-- Inyectados dinámicamente -->
                         </div>
-                        <button id="btn-activate-buzzers" onclick="startDuelRound()" class="flex-grow sm:flex-grow-0 px-6 py-3 bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-black uppercase tracking-wider rounded-xl transition shadow-lg active:scale-95 cursor-pointer">
+                        <button id="btn-activate-buzzers" onclick="startDuelRound()" disabled class="flex-grow sm:flex-grow-0 px-6 py-3 bg-gradient-to-b from-slate-800 to-slate-900 text-slate-400 text-xs font-black uppercase tracking-wider rounded-xl transition cursor-not-allowed opacity-55">
                             🔔 Activar Pulsadores
                         </button>
                     </div>
@@ -231,11 +246,11 @@
                 <div class="bg-slate-950 border border-slate-900 p-4 rounded-2xl flex items-center gap-3">
                     <span id="turn-ping" class="w-3.5 h-3.5 rounded-full bg-slate-700"></span>
                     <span id="turn-text" class="text-sm font-bold text-slate-400">
-                        Selecciona los equipos del duelo y haz clic en "Activar Pulsadores"
+                        1. Lanza las premisas con el botón del tablero. 2. Elige los duelistas y haz clic en "Activar Pulsadores"
                     </span>
                 </div>
 
-                <!-- Tarjeta de Preguntas -->
+                <!-- Tarjeta de Preguntas (Nombres y Título de Concepto) -->
                 <div id="main-card" class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
                     <div class="absolute -right-12 -top-12 w-48 h-48 bg-red-600/5 rounded-full blur-3xl pointer-events-none"></div>
                     
@@ -244,34 +259,47 @@
                         <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Edgar Morin</span>
                     </div>
 
-                    <h2 id="concept-title" class="text-xl md:text-2xl font-extrabold text-white leading-tight tracking-tight mb-6">
+                    <h2 id="concept-title" class="text-2xl md:text-3xl font-extrabold text-white leading-tight tracking-tight mb-6">
                         Concepto: Complejidad y Simplicidad
                     </h2>
 
-                    <div class="flex flex-col gap-4">
+                    <!-- CONTENEDOR DE CONTROL: Lanzamiento de Premisas -->
+                    <div id="premises-lock-placeholder" class="bg-slate-950 border-2 border-dashed border-slate-800 rounded-2xl p-8 text-center flex flex-col items-center justify-center gap-4 transition-all duration-350">
+                        <span class="text-3xl">👁️</span>
+                        <div>
+                            <h4 class="text-base font-bold text-slate-200">Premisas Ocultas</h4>
+                            <p class="text-xs text-slate-400 mt-1 max-w-sm mx-auto">Haga clic en el botón de abajo para revelar las premisas en tamaño gigante antes de habilitar los pulsadores.</p>
+                        </div>
+                        <button onclick="revealPremisasOnBoard()" class="px-6 py-3 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-bold uppercase tracking-wider rounded-xl transition shadow-lg cursor-pointer">
+                            Lanzar Premisas al Tablero 👁️
+                        </button>
+                    </div>
+
+                    <!-- Premisas Gigantes Ocultas por defecto -->
+                    <div id="premises-container" class="hidden flex flex-col gap-5">
                         <!-- Premisa 1 -->
-                        <div class="bg-slate-950/80 border border-slate-850 rounded-xl p-5 relative">
-                            <div class="absolute -top-3 left-4 px-3 py-0.5 bg-red-950/80 text-[9px] text-red-400 font-extrabold uppercase border border-red-900/30 rounded-full tracking-widest tech-font">
+                        <div class="bg-slate-950/80 border border-slate-850 rounded-2xl p-6 md:p-8 relative">
+                            <div class="absolute -top-3 left-6 px-3 py-0.5 bg-red-950/80 text-[10px] text-red-400 font-extrabold uppercase border border-red-900/30 rounded-full tracking-widest tech-font">
                                 Premisa 1
                             </div>
-                            <p id="premise-1-text" class="text-sm md:text-base leading-relaxed text-slate-200 pt-1 font-medium">
+                            <p id="premise-1-text" class="text-lg md:text-xl lg:text-2xl leading-relaxed text-slate-100 pt-1 font-semibold">
                                 El pensamiento complejo rechaza integrar el orden y busca eliminar por completo cualquier tipo de pensamiento simplificador.
                             </p>
                         </div>
 
                         <!-- Premisa 2 -->
-                        <div class="bg-slate-950/80 border border-slate-850 rounded-xl p-5 relative">
-                            <div class="absolute -top-3 left-4 px-3 py-0.5 bg-blue-950/80 text-[9px] text-blue-400 font-extrabold uppercase border border-blue-900/30 rounded-full tracking-widest tech-font">
+                        <div class="bg-slate-950/80 border border-slate-850 rounded-2xl p-6 md:p-8 relative">
+                            <div class="absolute -top-3 left-6 px-3 py-0.5 bg-blue-950/80 text-[10px] text-blue-400 font-extrabold uppercase border border-blue-900/30 rounded-full tracking-widest tech-font">
                                 Premisa 2
                             </div>
-                            <p id="premise-2-text" class="text-sm md:text-base leading-relaxed text-slate-200 pt-1 font-medium">
+                            <p id="premise-2-text" class="text-lg md:text-xl lg:text-2xl leading-relaxed text-slate-100 pt-1 font-semibold">
                                 La complejidad no es una palabra que aporte soluciones inmediatas, sino que se presenta como un desafío y una palabra problema.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- Grilla de Opciones Lógicas -->
+                <!-- Grilla de Opciones Lógicas (Grande) -->
                 <div class="flex flex-col gap-2">
                     <h3 class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Resolución del Duelo:</h3>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
@@ -307,8 +335,8 @@
                     </button>
                 </div>
 
-                <!-- Bloques Desglosados de Justificación Teórica -->
-                <div id="justification-panel" class="hidden bg-slate-950 border border-slate-800 p-6 rounded-3xl flex flex-col gap-4">
+                <!-- Bloques Desglosados de Justificación Teórica (Nombres de Premisas Explicados) -->
+                <div id="justification-panel" class="hidden bg-slate-950 border border-slate-800 p-6 rounded-3xl flex flex-col gap-4 animate-fadeIn">
                     <div class="text-amber-400 font-extrabold text-xs uppercase tracking-wider tech-font flex items-center gap-2">
                         ✨ Fundamentación Epistemológica de Edgar Morin:
                     </div>
@@ -329,7 +357,7 @@
         </section>
 
 
-        <!-- ================= PANTALLA 3: PANTALLA DEL BOTÓN ROJO GIGANTE (MÓVIL) ================= -->
+        <!-- ================= PANTALLA 4: PANTALLA DEL BOTÓN ROJO GIGANTE (MÓVIL) ================= -->
         <section id="buzzer-screen" class="hidden w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-200 text-center flex flex-col justify-between min-h-[500px]">
             
             <!-- Configuración Móvil (Paso 1: Elegir Equipo) -->
@@ -385,7 +413,7 @@
         </section>
 
 
-        <!-- ================= PANTALLA 4: PANTALLA DE FIN DE PARTIDA (PODIO) ================= -->
+        <!-- ================= PANTALLA 5: PANTALLA DE FIN DE PARTIDA (PODIO) ================= -->
         <section id="podium-screen" class="hidden w-full max-w-3xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
             <div class="absolute -right-24 -top-24 w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute -left-24 -bottom-24 w-72 h-72 bg-amber-600/5 rounded-full blur-3xl pointer-events-none"></div>
@@ -403,7 +431,7 @@
 
             <!-- Lista Ordenada de Ganadores -->
             <div id="podium-container" class="flex flex-col gap-4 max-w-md mx-auto mb-10">
-                <!-- Se inyectan dinámicamente con las posiciones finales -->
+                <!-- Se inyectan dinámicamente -->
             </div>
 
             <div class="flex flex-col sm:flex-row justify-center gap-4">
@@ -552,6 +580,7 @@
         let currentAttempt = 1;        // 1 (intento 1), 2 (rebote)
         let disabledOptions = new Set();
         let isQuestionResolved = false;
+        let isPremisesRevealed = false; // Estado para el nuevo bloqueo de premisas
 
         let activeDuelists = {
             teamA: "t3",
@@ -609,7 +638,7 @@
                     osc.stop(audioCtx.currentTime + 0.05);
                 }
             } catch (e) {
-                console.log("Audio Context no soportado aún.");
+                console.log("Audio Context no soportado.");
             }
         }
 
@@ -635,19 +664,18 @@
                 isBuzzerRole = true;
                 gamePin = pin;
                 
-                // Extraer nombres dinámicos de equipos si vienen en la URL
                 teams.t1 = urlParams.get('t1') || "Oros";
                 teams.t2 = urlParams.get('t2') || "Copas";
                 teams.t3 = urlParams.get('t3') || "Espadas";
                 teams.t4 = urlParams.get('t4') || "Bastos";
 
-                // Actualizar interfaz del celular
                 document.getElementById('team-t1').innerText = teams.t1;
                 document.getElementById('team-t2').innerText = teams.t2;
                 document.getElementById('team-t3').innerText = teams.t3;
                 document.getElementById('team-t4').innerText = teams.t4;
 
                 document.getElementById('setup-screen').classList.add('hidden');
+                document.getElementById('qr-screen').classList.add('hidden');
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('buzzer-screen').classList.remove('hidden');
 
@@ -655,55 +683,46 @@
             } else {
                 // Modo Docente / Proyector
                 document.getElementById('setup-screen').classList.remove('hidden');
+                document.getElementById('qr-screen').classList.add('hidden');
                 document.getElementById('game-screen').classList.add('hidden');
                 document.getElementById('buzzer-screen').classList.add('hidden');
                 
-                // Autogenerar PIN aleatorio de 4 dígitos
                 gamePin = Math.floor(1000 + Math.random() * 9000).toString();
             }
         };
 
-        // --- 6. Inicialización de la Partida (Docente) ---
+        // --- 6. Inicialización de la Partida y Generación de QR (Independiente) ---
         function confirmAndGenerateSession() {
             playSound('click');
             
-            // Asignar los valores personalizados ingresados en el formulario
             teams.t1 = document.getElementById('input-team-t1').value.trim() || "Oros";
             teams.t2 = document.getElementById('input-team-t2').value.trim() || "Copas";
             teams.t3 = document.getElementById('input-team-t3').value.trim() || "Espadas";
             teams.t4 = document.getElementById('input-team-t4').value.trim() || "Bastos";
 
-            // Sincronizar nombres con el Scoreboard de la pantalla principal
+            // Sincronizar nombres con Scoreboard
             document.getElementById('score-name-t1').innerText = teams.t1;
             document.getElementById('score-name-t2').innerText = teams.t2;
             document.getElementById('score-name-t3').innerText = teams.t3;
             document.getElementById('score-name-t4').innerText = teams.t4;
 
-            // Actualizar selectores de duelo con los nombres reales
             updateDuelSelectors();
 
-            // Construir URL móvil dinámica con nombres de equipos para que los reciba el celular
             const domain = window.location.origin + window.location.pathname;
             const mobileUrl = `${domain}?role=buzzer&pin=${gamePin}&t1=${encodeURIComponent(teams.t1)}&t2=${encodeURIComponent(teams.t2)}&t3=${encodeURIComponent(teams.t3)}&t4=${encodeURIComponent(teams.t4)}`;
             
-            // Generar código QR
             const qrImg = document.getElementById('qr-code-img');
             qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(mobileUrl)}`;
             
-            // Colocar PIN en la interfaz
             document.getElementById('session-pin-text').innerText = gamePin;
 
-            // Transición de pantalla de configuración a juego
+            // Mostrar pantalla independiente del QR
             document.getElementById('setup-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('header-progress').classList.remove('hidden');
+            document.getElementById('qr-screen').classList.remove('hidden');
 
-            // Barajar preguntas
             currentQuestionList = shuffle([...rawPremises]);
             activeQuestionIndex = 0;
-            loadQuestion(0);
 
-            // Iniciar escucha del canal en tiempo real
             initializeBoardSyncChannel();
         }
 
@@ -725,7 +744,15 @@
             `;
         }
 
-        // --- 7. Flujos en Tiempo Real de ntfy.sh (Server-Sent Events) ---
+        function goToGameScreen() {
+            playSound('click');
+            document.getElementById('qr-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('header-progress').classList.remove('hidden');
+            loadQuestion(0);
+        }
+
+        // --- 7. Flujos en Tiempo Real de ntfy.sh (SSE) ---
         function initializeBoardSyncChannel() {
             const topic = `duelo_complejidad_${gamePin}`;
             if (eventSourceConnection) eventSourceConnection.close();
@@ -739,7 +766,7 @@
                         handleRemoteBuzz(msg.teamKey);
                     }
                 } catch (e) {
-                    // Ignorar pings de ntfy
+                    // Ignorar pings
                 }
             };
         }
@@ -768,27 +795,24 @@
             };
         }
 
-        // Captura remota de pulsación
+        // --- 8. Captura remota de pulsación ---
         function handleRemoteBuzz(teamKey) {
-            // Solo procesar si la pregunta está activa, no resuelta y los pulsadores ya fueron habilitados por el docente
-            if (isQuestionResolved || !activeBuzzerState || currentWinnerOfBuzzer !== null) return;
+            // Solo procesar si premisas están reveladas, pregunta activa, pulsadores habilitados y sin ganador asignado aún
+            if (isQuestionResolved || !activeBuzzerState || currentWinnerOfBuzzer !== null || !isPremisesRevealed) return;
             
-            // Validar si el equipo pertenece al duelo configurado en esta ronda
             if (teamKey !== activeDuelists.teamA && teamKey !== activeDuelists.teamB) return;
 
             playSound('buzz');
             currentWinnerOfBuzzer = teamKey;
 
-            // Desactivar temporalmente los pulsadores remotos
             sendDisableBuzzersSignal();
 
-            // Sincronizar UI del proyector
             const display = document.getElementById('turn-text');
             const ping = document.getElementById('turn-ping');
             ping.className = "w-3.5 h-3.5 rounded-full bg-red-500 animate-ping";
-            display.innerHTML = `⚡ <span class="font-extrabold text-white uppercase">PULSACIÓN EN MESA:</span> Turno de respuesta para el equipo <span class="text-red-400">${teams[teamKey].toUpperCase()}</span>.`;
+            display.innerHTML = `⚡ <span class="font-extrabold text-white uppercase">PULSACIÓN:</span> Turno de respuesta para el equipo <span class="text-red-400">${teams[teamKey].toUpperCase()}</span>.`;
 
-            // Habilitar los botones de opciones lógicas en el proyector
+            // Habilitar las opciones lógicas en el proyector
             const options = ['V-V', 'V-F', 'F-V', 'F-F'];
             options.forEach(opt => {
                 const btn = document.getElementById(`opt-${opt}`);
@@ -798,7 +822,7 @@
             });
         }
 
-        // --- 8. Inicialización de Preguntas y Lógica de Selección ---
+        // --- 9. Inicialización de Preguntas y Bloqueo de Premisas ---
         function loadQuestion(index) {
             if (index >= currentQuestionList.length) {
                 finishAndShowPodium();
@@ -810,9 +834,19 @@
             currentAttempt = 1;
             currentWinnerOfBuzzer = null;
             disabledOptions.clear();
+            isPremisesRevealed = false; // Bloquear premisas por defecto
 
             document.getElementById('justification-panel').classList.add('hidden');
             document.getElementById('btn-reveal').disabled = true;
+
+            // Restablecer interfaz visual de premisas ocultas
+            document.getElementById('premises-lock-placeholder').classList.remove('hidden');
+            document.getElementById('premises-container').classList.add('hidden');
+
+            // Deshabilitar botón de pulsadores remotos inicialmente
+            const btnBuzzers = document.getElementById('btn-activate-buzzers');
+            btnBuzzers.disabled = true;
+            btnBuzzers.className = "flex-grow sm:flex-grow-0 px-6 py-3 bg-slate-850 text-slate-500 text-xs font-black uppercase tracking-wider rounded-xl transition cursor-not-allowed opacity-55";
 
             const q = currentQuestionList[index];
             document.getElementById('concept-number').innerText = `PREGUNTA #${index + 1} DE 10`;
@@ -823,7 +857,6 @@
             document.getElementById('justification-p1').innerText = q.exp1;
             document.getElementById('justification-p2').innerText = q.exp2;
 
-            // Deshabilitar respuestas en el proyector por seguridad inicial
             const options = ['V-V', 'V-F', 'F-V', 'F-F'];
             options.forEach(opt => {
                 const btn = document.getElementById(`opt-${opt}`);
@@ -831,25 +864,41 @@
                 btn.className = "group bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-40 border-2 border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 cursor-pointer active:scale-95";
             });
 
-            // Reestablecer banner de turno
             const display = document.getElementById('turn-text');
             const ping = document.getElementById('turn-ping');
             ping.className = "w-3.5 h-3.5 rounded-full bg-slate-700";
-            display.innerText = 'Selecciona los equipos del duelo y haz clic en "Activar Pulsadores"';
+            display.innerText = '1. Lanza las premisas con el botón del tablero. 2. Elige los duelistas y haz clic en "Activar Pulsadores"';
 
             updateProgressHeader();
-
-            // Notificar a los dispositivos móviles para que limpien su visor
             sendSignal({ event: "next_question" });
         }
 
-        function setupDuelTeams() {
+        // Revelar premisas en grande antes de dar paso a los pulsadores
+        function revealPremisasOnBoard() {
             playSound('click');
+            isPremisesRevealed = true;
+
+            document.getElementById('premises-lock-placeholder').classList.add('hidden');
+            document.getElementById('premises-container').classList.remove('hidden');
+
+            // Habilitar botón de activación de pulsadores
+            const btnBuzzers = document.getElementById('btn-activate-buzzers');
+            btnBuzzers.disabled = false;
+            btnBuzzers.className = "flex-grow sm:flex-grow-0 px-6 py-3 bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-black uppercase tracking-wider rounded-xl transition shadow-lg active:scale-95 cursor-pointer";
+
+            const display = document.getElementById('turn-text');
+            const ping = document.getElementById('turn-ping');
+            ping.className = "w-3.5 h-3.5 rounded-full bg-blue-500 animate-pulse";
+            display.innerText = 'Premisas reveladas. Seleccione los equipos del duelo y haga clic en "Activar Pulsadores"';
+        }
+
+        function setupDuelTeams() {
             activeDuelists.teamA = document.getElementById("duel-team-1").value;
             activeDuelists.teamB = document.getElementById("duel-team-2").value;
         }
 
         function startDuelRound() {
+            if (!isPremisesRevealed) return; // Forzar revelar antes de activar
             setupDuelTeams();
             if (activeDuelists.teamA === activeDuelists.teamB) {
                 const display = document.getElementById('turn-text');
@@ -862,16 +911,15 @@
             currentAttempt = 1;
             currentWinnerOfBuzzer = null;
 
-            // Inyectar botones de zumbido manual específicos para el duelo
+            // Botones de simulación de mesa manuales para uso opcional del docente
             const container = document.getElementById("manual-buzzers-container");
             container.innerHTML = `
-                <button onclick="handleRemoteBuzz('${activeDuelists.teamA}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-880 border border-slate-700 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">Pulsar ${teams[activeDuelists.teamA]}</button>
-                <button onclick="handleRemoteBuzz('${activeDuelists.teamB}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-880 border border-slate-700 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">Pulsar ${teams[activeDuelists.teamB]}</button>
+                <button onclick="handleRemoteBuzz('${activeDuelists.teamA}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">Pulsar ${teams[activeDuelists.teamA]}</button>
+                <button onclick="handleRemoteBuzz('${activeDuelists.teamB}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">Pulsar ${teams[activeDuelists.teamB]}</button>
             `;
 
             updateStateDisplay();
 
-            // Sincronizar activación de pulsadores móviles en tiempo real
             sendSignal({
                 event: "enable_buzzers",
                 teamA: activeDuelists.teamA,
@@ -879,7 +927,7 @@
             });
         }
 
-        // --- 8. Resolución del Quiz de Preguntas (Consola de Proyección) ---
+        // --- 10. Resolución del Quiz de Preguntas (Consola de Proyección) ---
         function chooseOption(selectedOption) {
             if (isQuestionResolved || currentWinnerOfBuzzer === null) return;
 
@@ -894,8 +942,12 @@
                 playSound('correct');
                 btn.className = "group bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 correct-glow";
                 
-                // El que presionó respondió bien: conserva sus puntos y el oponente los pierde
-                adjustManualScore(secondDuelist, -1);
+                if (currentAttempt === 1) {
+                    // El primer equipo responde bien: gana el duelo, solo el oponente pierde 1 punto
+                    adjustManualScore(secondDuelist, -1);
+                } else {
+                    // El segundo equipo responde bien en rebote: ya se le cobró 1 punto al primero por fallar, no se restan más puntos
+                }
                 resolveRonda(firstDuelist, secondDuelist, true);
             } else {
                 playSound('incorrect');
@@ -904,12 +956,12 @@
                 disabledOptions.add(selectedOption);
 
                 if (currentAttempt === 1) {
-                    // Primer equipo falla: pierde punto de inmediato y cede ventaja (rebote)
+                    // Primer equipo falla: pierde 1 punto inmediatamente y cede la ventaja (Rebote)
                     adjustManualScore(firstDuelist, -1);
                     currentAttempt = 2;
-                    currentWinnerOfBuzzer = secondDuelist; // Turno pasa por rebote
+                    currentWinnerOfBuzzer = secondDuelist; // Turno pasa al oponente por rebote
 
-                    // Bloquear las incorrectas y activar las restantes para el segundo equipo
+                    // Bloquear las incorrectas y activar las opciones restantes
                     const options = ['V-V', 'V-F', 'F-V', 'F-F'];
                     options.forEach(opt => {
                         const b = document.getElementById(`opt-${opt}`);
@@ -920,7 +972,7 @@
 
                     updateStateDisplay();
                 } else {
-                    // Segundo equipo también falla por rebote: pierde punto
+                    // Segundo equipo también falla en rebote (Doble Fallo): pierde 1 punto. Cada uno perdió un punto
                     adjustManualScore(secondDuelist, -1);
                     resolveRonda(firstDuelist, secondDuelist, false);
                 }
@@ -943,13 +995,19 @@
 
             if (success) {
                 ping.className = "w-3.5 h-3.5 rounded-full bg-emerald-500";
-                display.innerHTML = `🏆 <span class="text-emerald-400 font-bold uppercase">¡Duelo Resuelto!</span> Ganador del Duelo: <span class="text-emerald-300 font-extrabold uppercase">${teams[firstTeam]}</span> (Conserva sus puntos). Perdedor: <span class="text-red-400 font-extrabold uppercase">${teams[secondTeam]}</span> (-1 punto).`;
+                const winnerTeamName = teams[currentWinnerOfBuzzer];
+                const loserTeamName = (currentWinnerOfBuzzer === activeDuelists.teamA) ? teams[activeDuelists.teamB] : teams[activeDuelists.teamA];
+                
+                if (currentAttempt === 1) {
+                    display.innerHTML = `🏆 <span class="text-emerald-400 font-bold uppercase">¡Duelo Resuelto!</span> Ganador: <span class="text-emerald-300 font-extrabold uppercase">${winnerTeamName}</span>. Perdedor: <span class="text-red-400 font-extrabold uppercase">${loserTeamName}</span> (-1 punto).`;
+                } else {
+                    display.innerHTML = `🏆 <span class="text-emerald-400 font-bold uppercase">¡Duelo Resuelto por Rebote!</span> Ganador: <span class="text-emerald-300 font-extrabold uppercase">${winnerTeamName}</span>. El primer equipo que falló perdió 1 punto.`;
+                }
             } else {
                 ping.className = "w-3.5 h-3.5 rounded-full bg-red-500";
-                display.innerHTML = `💥 <span class="text-red-400 font-bold uppercase">Doble Fallo:</span> Ambos equipos respondieron de forma incorrecta y perdieron 1 punto en su marcador.`;
+                display.innerHTML = `💥 <span class="text-red-400 font-bold uppercase">Doble Fallo:</span> Ambos equipos respondieron incorrectamente y perdieron 1 punto en su marcador de la ronda.`;
             }
 
-            // Notificar bloqueo definitivo a todos los celulares
             sendDisableBuzzersSignal();
         }
 
@@ -958,7 +1016,6 @@
             options.forEach(opt => {
                 document.getElementById(`opt-${opt}`).disabled = true;
             });
-            // Desocupar contenedor de manuales
             document.getElementById("manual-buzzers-container").innerHTML = "";
         }
 
@@ -987,7 +1044,7 @@
             document.getElementById('header-progress-text').innerText = `${activeQuestionIndex + 1} / 10`;
         }
 
-        // --- 9. Gestión de Puntajes e Interfaz del Scoreboard ---
+        // --- 11. Gestión de Puntajes e Interfaz del Scoreboard ---
         function adjustManualScore(teamKey, amount) {
             scores[teamKey] = Math.max(0, scores[teamKey] + amount);
             document.getElementById(`score-val-${teamKey}`).innerText = scores[teamKey];
@@ -999,19 +1056,17 @@
             panel.classList.toggle('hidden');
         }
 
-        // --- 10. Interfaz del Participante Móvil ---
+        // --- 12. Interfaz del Participante Móvil ---
         function selectTeam(teamKey) {
             playSound('click');
             selectedBuzzerTeamKey = teamKey;
             
-            // Restablecer estilos de selección
             const keys = ['t1', 't2', 't3', 't4'];
             keys.forEach(k => {
                 const btn = document.getElementById(`team-${k}`);
                 if (btn) btn.className = "p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center";
             });
 
-            // Destacar botón seleccionado
             const selectedBtn = document.getElementById(`team-${teamKey}`);
             if (selectedBtn) {
                 selectedBtn.className = "p-3 border-2 border-red-500 bg-red-50 rounded-xl flex items-center justify-center font-black transition text-xs text-red-600 text-center";
@@ -1025,7 +1080,6 @@
             document.getElementById("buzzer-active").classList.remove("hidden");
             document.getElementById("buzzer-team-tag").innerText = `EQUIPO: ${teams[selectedBuzzerTeamKey].toUpperCase()}`;
             
-            // Forzar estado bloqueado por defecto al conectar
             disableMobileBuzzer();
         }
 
@@ -1033,7 +1087,6 @@
             if (!selectedBuzzerTeamKey || !gamePin) return;
             playSound('click');
 
-            // Enviar evento de pulsado en tiempo real mediante POST a ntfy
             const topic = `duelo_complejidad_${gamePin}`;
             fetch(`https://ntfy.sh/${topic}`, {
                 method: 'POST',
@@ -1043,7 +1096,6 @@
                     timestamp: Date.now()
                 })
             }).then(() => {
-                // Deshabilitar temporalmente el botón del participante para evitar pulsados repetitivos
                 const giantBtn = document.getElementById("giant-buzzer-button");
                 giantBtn.disabled = true;
                 giantBtn.className = "w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
@@ -1065,7 +1117,7 @@
                 giantBtn.className = "w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
             }
             if (statusText) {
-                statusText.innerText = "Esperando que el docente habilite los pulsadores...";
+                statusText.innerText = "Esperando que el docente active los pulsadores...";
                 statusText.className = "text-xs text-slate-400 mt-2 font-semibold";
             }
         }
@@ -1084,7 +1136,7 @@
                     statusText.innerText = "¡PULSADORES ACTIVOS! Presiona el botón rojo ya";
                     statusText.className = "text-xs text-emerald-600 mt-2 font-black animate-pulse";
                 }
-                playSound('correct'); // Sonido sutil para alertar que ya pueden pulsar
+                playSound('correct');
             } else {
                 if (giantBtn) {
                     giantBtn.disabled = true;
@@ -1115,37 +1167,33 @@
             }
         }
 
-        // --- 11. Sincronización Remota de Mensajería ---
+        // --- 13. Sincronización Remota de Mensajería ---
         function sendSignal(bodyObject) {
             const topic = `duelo_complejidad_${gamePin}`;
             fetch(`https://ntfy.sh/${topic}`, {
                 method: 'POST',
                 body: JSON.stringify(bodyObject)
-            }).catch(e => console.log("Fallo de envío de señal remota"));
+            }).catch(e => console.log("Fallo al enviar señal remota."));
         }
 
         function sendDisableBuzzersSignal() {
             sendSignal({ event: "disable_buzzers" });
         }
 
-        // --- 12. Cierre de Partida y Visualización de Podio ---
+        // --- 14. Cierre de Partida y Visualización de Podio ---
         function finishAndShowPodium() {
             playSound('correct');
             
-            // Ocultar juego y mostrar podio
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('header-progress').classList.add('hidden');
             document.getElementById('podium-screen').classList.remove('hidden');
 
-            // Desconectar SSE en el proyector
             if (eventSourceConnection) eventSourceConnection.close();
 
-            // Ordenar los equipos de mayor a menor puntaje
             const sortedTeams = Object.keys(scores).map(key => {
                 return { key: key, name: teams[key], score: scores[key] };
             }).sort((a, b) => b.score - a.score);
 
-            // Renderizar el podio final
             const container = document.getElementById('podium-container');
             container.innerHTML = "";
 
@@ -1184,42 +1232,35 @@
         function backToSetup() {
             playSound('click');
             
-            // Restablecer valores de fábrica de marcadores
             Object.keys(scores).forEach(key => scores[key] = 5);
             document.getElementById('score-val-t1').innerText = "5";
             document.getElementById('score-val-t2').innerText = "5";
             document.getElementById('score-val-t3').innerText = "5";
             document.getElementById('score-val-t4').innerText = "5";
 
-            // Transición a pantalla de configuración
             document.getElementById('podium-screen').classList.add('hidden');
             document.getElementById('setup-screen').classList.remove('hidden');
 
-            // Nuevo PIN para no chocar con la partida anterior
             gamePin = Math.floor(1000 + Math.random() * 9000).toString();
         }
 
         function restartSameGame() {
             playSound('click');
             
-            // Reestablecer marcadores a 5 puntos
             Object.keys(scores).forEach(key => scores[key] = 5);
             document.getElementById('score-val-t1').innerText = "5";
             document.getElementById('score-val-t2').innerText = "5";
             document.getElementById('score-val-t3').innerText = "5";
             document.getElementById('score-val-t4').innerText = "5";
 
-            // Volver a la pantalla del juego principal directamente
             document.getElementById('podium-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.remove('hidden');
             document.getElementById('header-progress').classList.remove('hidden');
 
-            // Volver a barajar y empezar
             currentQuestionList = shuffle([...rawPremises]);
             activeQuestionIndex = 0;
             loadQuestion(0);
 
-            // Re-abrir canal en el proyector
             initializeBoardSyncChannel();
         }
 
