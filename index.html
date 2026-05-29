@@ -14,12 +14,15 @@
         .tech-font {
             font-family: 'Share Tech Mono', monospace;
         }
+        .neon-border {
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.15);
+        }
         .correct-glow {
             animation: correct-glow-animation 1.5s ease-out infinite alternate;
         }
         @keyframes correct-glow-animation {
             0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
-            100% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.6); border-color: rgba(16, 185, 129, 1); }
+            100% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.7); border-color: rgba(16, 185, 129, 1); }
         }
         .shake {
             animation: shake-animation 0.5s ease-in-out;
@@ -29,344 +32,406 @@
             20%, 60% { transform: translateX(-6px); }
             40%, 80% { transform: translateX(6px); }
         }
-        .pulsar-active {
-            animation: pulse-red 2s infinite;
-        }
-        @keyframes pulse-red {
-            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
-            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
-            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
-        }
     </style>
 </head>
 <body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <!-- ========================================== -->
-    <!-- MODO CONTROLADOR PRINCIPAL (DOCENTE/BOARD) -->
-    <!-- ========================================== -->
-    <div id="board-layout" class="hidden flex flex-col min-h-screen justify-between">
-        <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
-            <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-                <div class="flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-base shadow-lg shadow-red-950">
-                        🔴
-                    </div>
-                    <div>
-                        <h1 class="text-lg font-extrabold tracking-tight text-white uppercase flex items-center gap-2">
-                            El Duelo del Botón Rojo
-                            <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 tech-font">MÉTODO MORIN</span>
-                        </h1>
-                    </div>
+    <!-- CABECERA -->
+    <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-base shadow-lg shadow-red-950">
+                    🔴
                 </div>
-
-                <!-- MARCADOR DE EQUIPOS EN TIEMPO REAL -->
-                <div class="flex flex-wrap gap-3" id="header-scoreboard">
-                    <!-- Inyección dinámica de equipos y puntajes -->
-                </div>
-
-                <div class="flex items-center gap-4">
-                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest tech-font bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
-                        PIN Sincronización: <span id="board-pin-display" class="text-amber-400 text-sm font-black ml-1">----</span>
-                    </div>
-                    <div id="header-progress" class="hidden text-xs font-bold text-slate-400 uppercase tracking-widest tech-font bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
-                        Progreso: <span id="header-progress-text" class="text-red-400">0 / 10</span>
-                    </div>
+                <div>
+                    <h1 class="text-lg font-extrabold tracking-tight text-white uppercase flex items-center gap-2">
+                        El Duelo del Botón Rojo
+                        <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 tech-font">MÉTODO MORIN</span>
+                    </h1>
                 </div>
             </div>
-        </header>
+            <div id="header-progress" class="hidden text-xs font-bold text-slate-400 uppercase tracking-widest tech-font bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                Pregunta: <span id="header-progress-text" class="text-red-400">0 / 10</span>
+            </div>
+        </div>
+    </header>
 
-        <!-- CONTENEDOR PRINCIPAL -->
-        <main class="max-w-5xl mx-auto p-4 md:p-8 flex-grow w-full flex items-center justify-center">
+    <!-- CONTENEDOR PRINCIPAL -->
+    <main class="max-w-7xl mx-auto p-4 md:p-8 flex-grow w-full flex items-center justify-center">
+
+        <!-- ================= PANTALLA 1: CONFIGURACIÓN DE EQUIPOS ================= -->
+        <section id="setup-screen" class="w-full max-w-4xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-8 md:p-12 shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-24 -top-24 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-24 -bottom-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
             
-            <!-- PANTALLA INICIAL (CONFIGURACIÓN Y QR) -->
-            <section id="welcome-screen" class="w-full max-w-3xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
-                <div class="absolute -right-24 -top-24 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
-                <div class="absolute -left-24 -bottom-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
-                
+            <div class="text-center mb-8">
                 <span class="text-xs font-bold tracking-widest text-red-500 uppercase bg-red-500/10 px-4 py-1.5 rounded-full border border-red-500/20 tech-font">
-                    Dinámica Epistemológica Activa
+                    Laboratorio de Epistemología Vivencial
                 </span>
-                
-                <h2 class="text-4xl md:text-5xl font-black text-white mt-6 mb-4 tracking-tight leading-tight">
-                    ¿Están listos para el <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Duelo de la Complejidad</span>?
+                <h2 class="text-4xl md:text-5xl font-black text-white mt-4 mb-2 tracking-tight leading-tight">
+                    Comienzo de la Actividad
                 </h2>
-                
-                <!-- PASO 1: REGISTRO DE EQUIPOS -->
-                <div id="setup-teams-block" class="bg-slate-950/80 p-6 rounded-2xl border border-slate-800 text-left max-w-2xl mx-auto mb-6">
-                    <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-4 tech-font">Paso 1: Nombres de los 4 Equipos</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Equipo 1 (Amarillo/Oros)</label>
-                            <input id="setup-t1" type="text" value="Oros" class="bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 font-semibold transition">
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Equipo 2 (Azul/Copas)</label>
-                            <input id="setup-t2" type="text" value="Copas" class="bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 font-semibold transition">
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Equipo 3 (Rojo/Espadas)</label>
-                            <input id="setup-t3" type="text" value="Espadas" class="bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 font-semibold transition">
-                        </div>
-                        <div class="flex flex-col gap-1.5">
-                            <label class="text-[11px] text-slate-500 uppercase tracking-widest font-bold">Equipo 4 (Verde/Bastos)</label>
-                            <input id="setup-t4" type="text" value="Bastos" class="bg-slate-900 border border-slate-850 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-red-500 font-semibold transition">
-                        </div>
-                    </div>
-                    <button onclick="confirmAndGenerateSession()" class="w-full mt-6 py-3 bg-red-600 hover:bg-red-500 text-white font-extrabold text-sm rounded-xl transition uppercase tracking-wider cursor-pointer">
-                        Confirmar Equipos y Generar Código QR ⚡
-                    </button>
-                </div>
+                <p class="text-slate-400 text-sm max-w-lg mx-auto">
+                    Configura los nombres de los cuatro equipos participantes y sus marcadores ideales de 5 puntos para dar inicio a la simulación.
+                </p>
+            </div>
 
-                <!-- PASO 2: CONEXIÓN QR Y PIN -->
-                <div id="setup-qr-block" class="hidden flex flex-col md:flex-row items-center justify-center gap-8 bg-slate-950/80 p-6 rounded-2xl border border-slate-800/80 max-w-2xl mx-auto mb-8 text-left">
-                    <div class="bg-white p-3 rounded-xl shadow-inner flex items-center justify-center">
-                        <img id="welcome-qr-image" class="w-40 h-40" src="https://placehold.co/150x150/0f172a/ffffff?text=QR" alt="Código QR de Sincronización">
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="text-xs font-extrabold text-slate-500 uppercase tracking-widest tech-font mb-1">CONEXIÓN DE CELULARES</h4>
-                        <p class="text-xs text-slate-400 mb-3 leading-normal">
-                            Escaneen con la cámara del celular para abrir el pulsador. Seleccionen su equipo en la pantalla móvil para sincronizar el botón rojo.
-                        </p>
-                        <div class="text-sm font-semibold text-slate-300">
-                            PIN de Acceso: <span id="welcome-pin-display" class="text-amber-400 font-extrabold text-lg ml-1 bg-slate-900 px-2 py-1 rounded border border-slate-800 tracking-widest">----</span>
-                        </div>
-                        <div class="text-[10px] text-emerald-400 flex items-center gap-1.5 mt-3">
-                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                            <span>Canal de sincronización seguro y activo</span>
-                        </div>
-                    </div>
+            <!-- Formularios de los Equipos -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <div class="bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl">
+                    <label class="text-xs font-black text-red-400 uppercase tracking-wider block mb-2">Equipo 1 (Oros)</label>
+                    <input type="text" id="input-team-t1" value="Oros" class="w-full bg-slate-950 border border-slate-800 focus:border-red-500 focus:ring-1 focus:ring-red-500 outline-none rounded-xl px-4 py-3 text-sm text-slate-100 font-bold transition">
                 </div>
+                <div class="bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl">
+                    <label class="text-xs font-black text-blue-400 uppercase tracking-wider block mb-2">Equipo 2 (Copas)</label>
+                    <input type="text" id="input-team-t2" value="Copas" class="w-full bg-slate-950 border border-slate-800 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none rounded-xl px-4 py-3 text-sm text-slate-100 font-bold transition">
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl">
+                    <label class="text-xs font-black text-emerald-400 uppercase tracking-wider block mb-2">Equipo 3 (Espadas)</label>
+                    <input type="text" id="input-team-t3" value="Espadas" class="w-full bg-slate-950 border border-slate-800 focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 outline-none rounded-xl px-4 py-3 text-sm text-slate-100 font-bold transition">
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800/80 p-5 rounded-2xl">
+                    <label class="text-xs font-black text-amber-400 uppercase tracking-wider block mb-2">Equipo 4 (Bastos)</label>
+                    <input type="text" id="input-team-t4" value="Bastos" class="w-full bg-slate-950 border border-slate-800 focus:border-amber-500 focus:ring-1 focus:ring-amber-500 outline-none rounded-xl px-4 py-3 text-sm text-slate-100 font-bold transition">
+                </div>
+            </div>
 
-                <button id="btn-start-game" disabled onclick="startGame()" class="hidden group relative px-10 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-xl rounded-2xl shadow-xl shadow-red-950/50 transition-all duration-150 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer disabled:opacity-50 disabled:pointer-events-none">
-                    Comienzo de la Actividad 🚀
+            <div class="flex justify-center">
+                <button onclick="confirmAndGenerateSession()" class="group relative px-10 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-xl rounded-2xl shadow-xl shadow-red-950/50 transition-all duration-150 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer uppercase tracking-wider">
+                    Confirmar Equipos y Generar QR 🚀
                 </button>
-            </section>
+            </div>
+        </section>
 
-            <!-- PANTALLA DE JUEGO PRINCIPAL -->
-            <section id="game-screen" class="hidden w-full flex flex-col gap-6">
+
+        <!-- ================= PANTALLA 2: TABLERO DE JUEGO (PROYECTOR) ================= -->
+        <section id="game-screen" class="hidden w-full grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <!-- COLUMNA IZQUIERDA: CONTROLES DEL DOCENTE, QR Y MARCADOR (4/12 col) -->
+            <div class="lg:col-span-4 flex flex-col gap-6">
                 
-                <!-- SELECTOR DE DUELISTA DE LA RONDA -->
-                <div id="setup-round-duel" class="w-full bg-slate-950 border border-amber-500/20 rounded-2xl p-5 flex flex-col md:flex-row items-center justify-between gap-4 shadow-lg">
-                    <div class="text-left">
-                        <span class="text-xs font-extrabold text-amber-400 uppercase tracking-wider tech-font block mb-1">🛡️ CONFIGURAR DUELO DE ESTA RONDA:</span>
-                        <p class="text-xs text-slate-400">Selecciona los dos equipos que se enfrentan en la mesa para habilitar sus pulsadores móviles.</p>
+                <!-- Tarjeta del Código QR -->
+                <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-3xl text-center shadow-lg">
+                    <h3 class="text-xs font-black uppercase text-red-500 tracking-widest tech-font mb-4">Sincronizar Pulsadores Móviles</h3>
+                    <div class="bg-white p-3 rounded-2xl inline-block mb-3 shadow-inner">
+                        <img id="qr-code-img" src="" alt="Código QR de Conexión" class="w-44 h-44 mx-auto">
                     </div>
-                    <div class="flex items-center gap-4 flex-wrap">
-                        <select id="duel-team-1" onchange="setupDuelTeams()" class="bg-slate-900 border border-slate-800 text-sm text-white font-bold rounded-xl px-4 py-2.5 focus:outline-none">
-                            <!-- Inyección dinámica de opciones -->
-                        </select>
-                        <span class="text-amber-400 font-black text-sm tech-font">VS</span>
-                        <select id="duel-team-2" onchange="setupDuelTeams()" class="bg-slate-900 border border-slate-800 text-sm text-white font-bold rounded-xl px-4 py-2.5 focus:outline-none">
-                            <!-- Inyección dinámica de opciones -->
-                        </select>
-                        <button onclick="startDuelRound()" class="bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-500 hover:to-emerald-600 text-white font-black text-xs px-5 py-3 rounded-xl uppercase tracking-wider cursor-pointer">
-                            Activar Pulsadores 🔒⚡
+                    <div class="text-xs text-slate-400 mt-2 font-semibold">
+                        PIN de la Sesión: <span id="session-pin-text" class="text-red-400 font-mono font-bold text-sm tracking-widest bg-slate-950 px-2 py-0.5 rounded border border-slate-800 ml-1">0000</span>
+                    </div>
+                    <p class="text-[10px] text-slate-500 mt-2">
+                        Escanea el código para transformar tu celular en el pulsador del juego en tiempo real.
+                    </p>
+                </div>
+
+                <!-- Scoreboard Dinámico de los 4 Equipos -->
+                <div class="bg-slate-900/80 border border-slate-800 p-6 rounded-3xl shadow-lg">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-3 mb-4">
+                        <h3 class="text-xs font-black uppercase text-slate-400 tracking-widest tech-font">Tabla de Marcadores</h3>
+                        <span class="text-[10px] bg-slate-950 px-2 py-0.5 rounded text-slate-400 border border-slate-800">Meta: Mantener 5 Puntos</span>
+                    </div>
+                    
+                    <div class="flex flex-col gap-3">
+                        <!-- Equipo 1 -->
+                        <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
+                            <div>
+                                <span class="text-xs font-black text-red-400 uppercase tracking-wider block">Equipo 1</span>
+                                <span id="score-name-t1" class="text-sm font-extrabold text-slate-200">Oros</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="adjustManualScore('t1', -1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">-</button>
+                                <span id="score-val-t1" class="text-lg font-black text-white tech-font">5</span>
+                                <button onclick="adjustManualScore('t1', 1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Equipo 2 -->
+                        <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
+                            <div>
+                                <span class="text-xs font-black text-blue-400 uppercase tracking-wider block">Equipo 2</span>
+                                <span id="score-name-t2" class="text-sm font-extrabold text-slate-200">Copas</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="adjustManualScore('t2', -1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">-</button>
+                                <span id="score-val-t2" class="text-lg font-black text-white tech-font">5</span>
+                                <button onclick="adjustManualScore('t2', 1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Equipo 3 -->
+                        <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
+                            <div>
+                                <span class="text-xs font-black text-emerald-400 uppercase tracking-wider block">Equipo 3</span>
+                                <span id="score-name-t3" class="text-sm font-extrabold text-slate-200">Espadas</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="adjustManualScore('t3', -1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">-</button>
+                                <span id="score-val-t3" class="text-lg font-black text-white tech-font">5</span>
+                                <button onclick="adjustManualScore('t3', 1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">+</button>
+                            </div>
+                        </div>
+
+                        <!-- Equipo 4 -->
+                        <div class="flex items-center justify-between bg-slate-950/50 border border-slate-850 p-3 rounded-xl">
+                            <div>
+                                <span class="text-xs font-black text-amber-400 uppercase tracking-wider block">Equipo 4</span>
+                                <span id="score-name-t4" class="text-sm font-extrabold text-slate-200">Bastos</span>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="adjustManualScore('t4', -1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">-</button>
+                                <span id="score-val-t4" class="text-lg font-black text-white tech-font">5</span>
+                                <button onclick="adjustManualScore('t4', 1)" class="w-6 h-6 rounded bg-slate-900 hover:bg-slate-800 text-slate-400 font-bold text-xs border border-slate-800">+</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botón de Finalizar Partida Rápido -->
+                <button onclick="finishAndShowPodium()" class="w-full py-4 bg-gradient-to-r from-red-950 to-slate-950 hover:from-red-900 hover:to-slate-900 border border-red-900/40 hover:border-red-700 rounded-2xl text-xs font-extrabold text-red-400 hover:text-white uppercase tracking-widest transition shadow-lg cursor-pointer">
+                    🛑 Finalizar Partida
+                </button>
+            </div>
+
+            <!-- COLUMNA DERECHA: DUELO, PREGUNTAS Y OPCIONES (8/12 col) -->
+            <div class="lg:col-span-8 flex flex-col gap-6">
+                
+                <!-- Configuración del Duelo Activo de la Ronda -->
+                <div class="bg-gradient-to-r from-slate-900 to-slate-950 border border-slate-800 p-5 rounded-3xl flex flex-col sm:flex-row justify-between items-center gap-4 shadow-xl">
+                    <div class="w-full sm:w-auto">
+                        <label class="text-[10px] font-black uppercase text-slate-500 tracking-wider block mb-1">Configurar Duelo Activo</label>
+                        <div class="flex items-center gap-2">
+                            <select id="duel-team-1" class="bg-slate-950 text-xs text-slate-200 font-bold border border-slate-800 rounded-lg p-2 focus:border-red-500 outline-none">
+                                <option value="t1">Equipo 1</option>
+                                <option value="t2">Equipo 2</option>
+                                <option value="t3" selected>Equipo 3</option>
+                                <option value="t4">Equipo 4</option>
+                            </select>
+                            <span class="text-xs font-bold text-red-500 uppercase tech-font">VS</span>
+                            <select id="duel-team-2" class="bg-slate-950 text-xs text-slate-200 font-bold border border-slate-800 rounded-lg p-2 focus:border-red-500 outline-none">
+                                <option value="t1">Equipo 1</option>
+                                <option value="t2" selected>Equipo 2</option>
+                                <option value="t3">Equipo 3</option>
+                                <option value="t4">Equipo 4</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-2 w-full sm:w-auto">
+                        <!-- Registrar Pulsación Manual -->
+                        <div id="manual-buzzers-container" class="flex gap-2">
+                            <!-- Se inyectan dinámicamente con las etiquetas de los equipos -->
+                        </div>
+                        <button id="btn-activate-buzzers" onclick="startDuelRound()" class="flex-grow sm:flex-grow-0 px-6 py-3 bg-gradient-to-b from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white text-xs font-black uppercase tracking-wider rounded-xl transition shadow-lg active:scale-95 cursor-pointer">
+                            🔔 Activar Pulsadores
                         </button>
                     </div>
                 </div>
 
-                <!-- INDICADOR DE TURNO Y ACCIÓN DEL JUEGO -->
-                <div id="turn-banner" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg">
-                    <div class="flex items-center gap-3">
-                        <span id="turn-ping" class="w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse"></span>
-                        <span id="turn-text" class="text-sm md:text-base font-bold text-slate-300">
-                            Configure los dos equipos del duelo arriba para activar los pulsadores...
-                        </span>
-                    </div>
-                    <!-- Botón manual de emergencia por si falla la red -->
-                    <div class="flex gap-2 w-full sm:w-auto" id="manual-buzzers-container">
-                        <!-- Inyección de botones manuales de emergencia -->
-                    </div>
+                <!-- Estado en Tiempo Real -->
+                <div class="bg-slate-950 border border-slate-900 p-4 rounded-2xl flex items-center gap-3">
+                    <span id="turn-ping" class="w-3.5 h-3.5 rounded-full bg-slate-700"></span>
+                    <span id="turn-text" class="text-sm font-bold text-slate-400">
+                        Selecciona los equipos del duelo y haz clic en "Activar Pulsadores"
+                    </span>
                 </div>
 
-                <!-- TARJETA DE PREGUNTA ACTIVA CON TEXTO GIGANTE -->
-                <div id="main-card" class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-300">
+                <!-- Tarjeta de Preguntas -->
+                <div id="main-card" class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-8 shadow-2xl relative overflow-hidden">
                     <div class="absolute -right-12 -top-12 w-48 h-48 bg-red-600/5 rounded-full blur-3xl pointer-events-none"></div>
                     
-                    <!-- ID y Concepto -->
-                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
-                        <span id="concept-number" class="text-xs font-black text-red-500 uppercase tracking-widest tech-font">PREGUNTA #1 DE 10</span>
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-5">
+                        <span id="concept-number" class="text-xs font-black text-red-500 tracking-widest tech-font uppercase">Pregunta #1</span>
                         <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Edgar Morin</span>
                     </div>
 
-                    <!-- Título del Concepto -->
-                    <h2 id="concept-title" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight mb-8">
+                    <h2 id="concept-title" class="text-xl md:text-2xl font-extrabold text-white leading-tight tracking-tight mb-6">
                         Concepto: Complejidad y Simplicidad
                     </h2>
 
-                    <!-- Bloques de Premisas (Legibilidad Máxima) -->
-                    <div class="flex flex-col gap-6">
+                    <div class="flex flex-col gap-4">
                         <!-- Premisa 1 -->
-                        <div class="bg-slate-950/60 border border-slate-850 rounded-2xl p-6 md:p-8 hover:border-slate-800 transition relative">
-                            <div class="absolute -top-3 left-6 px-3 py-1 bg-red-950/80 text-[11px] text-red-400 font-extrabold uppercase border border-red-900/30 rounded-full tracking-widest tech-font">
+                        <div class="bg-slate-950/80 border border-slate-850 rounded-xl p-5 relative">
+                            <div class="absolute -top-3 left-4 px-3 py-0.5 bg-red-950/80 text-[9px] text-red-400 font-extrabold uppercase border border-red-900/30 rounded-full tracking-widest tech-font">
                                 Premisa 1
                             </div>
-                            <p id="premise-1-text" class="text-lg md:text-xl lg:text-2xl leading-relaxed text-slate-100 pt-1 font-medium">
-                                Carga de premisa...
+                            <p id="premise-1-text" class="text-sm md:text-base leading-relaxed text-slate-200 pt-1 font-medium">
+                                El pensamiento complejo rechaza integrar el orden y busca eliminar por completo cualquier tipo de pensamiento simplificador.
                             </p>
                         </div>
 
                         <!-- Premisa 2 -->
-                        <div class="bg-slate-950/60 border border-slate-850 rounded-2xl p-6 md:p-8 hover:border-slate-800 transition relative">
-                            <div class="absolute -top-3 left-6 px-3 py-1 bg-blue-950/80 text-[11px] text-blue-400 font-extrabold uppercase border border-blue-900/30 rounded-full tracking-widest tech-font">
+                        <div class="bg-slate-950/80 border border-slate-850 rounded-xl p-5 relative">
+                            <div class="absolute -top-3 left-4 px-3 py-0.5 bg-blue-950/80 text-[9px] text-blue-400 font-extrabold uppercase border border-blue-900/30 rounded-full tracking-widest tech-font">
                                 Premisa 2
                             </div>
-                            <p id="premise-2-text" class="text-lg md:text-xl lg:text-2xl leading-relaxed text-slate-100 pt-1 font-medium">
-                                Carga de premisa...
+                            <p id="premise-2-text" class="text-sm md:text-base leading-relaxed text-slate-200 pt-1 font-medium">
+                                La complejidad no es una palabra que aporte soluciones inmediatas, sino que se presenta como un desafío y una palabra problema.
                             </p>
                         </div>
                     </div>
                 </div>
 
-                <!-- GRILLA DE OPCIONES LÓGICAS -->
-                <div class="flex flex-col gap-3">
-                    <h3 class="text-xs font-extrabold uppercase text-slate-500 tracking-widest">
-                        Seleccione la Combinación lógica para resolver el duelo:
-                    </h3>
-                    
-                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-                        <!-- Opción V - V -->
-                        <button id="opt-V-V" onclick="chooseOption('V-V')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
-                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">V - V</span>
-                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Verdadera - Verdadera</span>
+                <!-- Grilla de Opciones Lógicas -->
+                <div class="flex flex-col gap-2">
+                    <h3 class="text-[10px] font-black uppercase text-slate-500 tracking-wider">Resolución del Duelo:</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                        <button id="opt-V-V" onclick="chooseOption('V-V')" disabled class="group bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-40 border-2 border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-2xl font-black group-hover:scale-105 transition duration-150">V - V</span>
+                            <span class="text-[9px] text-slate-400 tracking-widest font-bold uppercase tech-font">Verdadera - Verdadera</span>
                         </button>
 
-                        <!-- Opción V - F -->
-                        <button id="opt-V-F" onclick="chooseOption('V-F')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
-                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">V - F</span>
-                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Verdadera - Falsa</span>
+                        <button id="opt-V-F" onclick="chooseOption('V-F')" disabled class="group bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-40 border-2 border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-2xl font-black group-hover:scale-105 transition duration-150">V - F</span>
+                            <span class="text-[9px] text-slate-400 tracking-widest font-bold uppercase tech-font">Verdadera - Falsa</span>
                         </button>
 
-                        <!-- Opción F - V -->
-                        <button id="opt-F-V" onclick="chooseOption('F-V')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
-                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">F - V</span>
-                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Falsa - Verdadera</span>
+                        <button id="opt-F-V" onclick="chooseOption('F-V')" disabled class="group bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-40 border-2 border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-2xl font-black group-hover:scale-105 transition duration-150">F - V</span>
+                            <span class="text-[9px] text-slate-400 tracking-widest font-bold uppercase tech-font">Falsa - Verdadera</span>
                         </button>
 
-                        <!-- Opción F - F -->
-                        <button id="opt-F-F" onclick="chooseOption('F-F')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
-                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">F - F</span>
-                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Falsa - Falsa</span>
+                        <button id="opt-F-F" onclick="chooseOption('F-F')" disabled class="group bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-40 border-2 border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-2xl font-black group-hover:scale-105 transition duration-150">F - F</span>
+                            <span class="text-[9px] text-slate-400 tracking-widest font-bold uppercase tech-font">Falsa - Falsa</span>
                         </button>
                     </div>
                 </div>
 
-                <!-- CONTROLES DE FLUJO -->
+                <!-- Controles de Navegación -->
                 <div class="flex flex-col sm:flex-row gap-4 w-full mt-2">
-                    <button id="btn-reveal" onclick="revealJustification()" disabled class="flex-grow py-5 px-6 rounded-2xl font-bold transition flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:pointer-events-none text-slate-100 shadow-md cursor-pointer">
-                        💡 Revelar Explicación Teórica Desglosada
+                    <button id="btn-reveal" onclick="revealJustification()" disabled class="flex-grow py-4 px-6 rounded-2xl font-bold transition flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:pointer-events-none text-slate-100 shadow-md cursor-pointer">
+                        💡 Revelar Explicación Teórica
                     </button>
-                    <button id="btn-next" onclick="loadNextQuestion()" class="py-5 px-10 rounded-2xl font-black transition flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-950/20 cursor-pointer">
+                    <button id="btn-next" onclick="loadNextQuestion()" class="py-4 px-10 rounded-2xl font-black transition flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-950/20 cursor-pointer">
                         Siguiente Pregunta ➡️
                     </button>
                 </div>
 
-                <!-- PANEL DE EXPLICACIÓN (DESGLOSADO POR PREMISAS) -->
-                <div id="justification-panel" class="hidden flex flex-col gap-4 bg-slate-950 border-2 border-amber-500/20 rounded-2xl p-6 md:p-8 transition-all duration-300">
-                    <div class="flex items-center gap-2 text-amber-400 font-extrabold text-sm uppercase tracking-wider tech-font">
+                <!-- Bloques Desglosados de Justificación Teórica -->
+                <div id="justification-panel" class="hidden bg-slate-950 border border-slate-800 p-6 rounded-3xl flex flex-col gap-4">
+                    <div class="text-amber-400 font-extrabold text-xs uppercase tracking-wider tech-font flex items-center gap-2">
                         ✨ Fundamentación Epistemológica de Edgar Morin:
                     </div>
                     
-                    <!-- Desglose Premisa 1 -->
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                        <span id="explanation-badge-1" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-red-500/20 text-red-400">Análisis Premisa 1</span>
-                        <p id="justification-p1" class="mt-2 text-slate-300 text-sm md:text-base leading-relaxed italic">Cargando...</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-850">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-red-400 block mb-1">Premisa 1</span>
+                            <p id="justification-p1" class="text-xs text-slate-300 leading-relaxed italic">Justificación de la premisa 1...</p>
+                        </div>
+                        <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-850">
+                            <span class="text-[10px] font-extrabold uppercase tracking-wider text-blue-400 block mb-1">Premisa 2</span>
+                            <p id="justification-p2" class="text-xs text-slate-300 leading-relaxed italic">Justificación de la premisa 2...</p>
+                        </div>
                     </div>
-
-                    <!-- Desglose Premisa 2 -->
-                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
-                        <span id="explanation-badge-2" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-blue-500/20 text-blue-400">Análisis Premisa 2</span>
-                        <p id="justification-p2" class="mt-2 text-slate-300 text-sm md:text-base leading-relaxed italic">Cargando...</p>
-                    </div>
                 </div>
 
-            </section>
-        </main>
+            </div>
+        </section>
 
-        <!-- PIE DE PÁGINA -->
-        <footer class="border-t border-slate-950 bg-slate-950/90 py-5 px-6 text-center text-xs text-slate-500 mt-12">
-            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
-                <div>
-                    Consola Educativa "El Duelo de la Complejidad" — Basado en <span class="italic text-slate-400">Edgar Morin</span>.
+
+        <!-- ================= PANTALLA 3: PANTALLA DEL BOTÓN ROJO GIGANTE (MÓVIL) ================= -->
+        <section id="buzzer-screen" class="hidden w-full max-w-lg bg-white rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-200 text-center flex flex-col justify-between min-h-[500px]">
+            
+            <!-- Configuración Móvil (Paso 1: Elegir Equipo) -->
+            <div id="buzzer-setup" class="flex-grow flex flex-col justify-center gap-6">
+                <div class="text-center">
+                    <span class="text-xs font-black uppercase bg-slate-100 text-slate-800 px-3 py-1 rounded-full border border-slate-200 tracking-wider">Paso 1</span>
+                    <h2 class="text-2xl font-black text-slate-950 mt-4">¿A qué equipo perteneces?</h2>
+                    <p class="text-xs text-slate-500 mt-1">Selecciona el equipo asignado por el docente para continuar.</p>
                 </div>
-                <div class="flex gap-4">
-                    <button onclick="backToMenu()" class="text-slate-400 hover:text-white transition underline font-semibold cursor-pointer">Volver al Menú Inicial</button>
-                    <button onclick="restartGame()" class="text-slate-400 hover:text-white transition underline font-semibold cursor-pointer">Barajar de Nuevo</button>
+                
+                <div class="grid grid-cols-2 gap-3 max-w-md mx-auto w-full">
+                    <button id="team-t1" onclick="selectTeam('t1')" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">
+                        Oros
+                    </button>
+                    <button id="team-t2" onclick="selectTeam('t2')" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">
+                        Copas
+                    </button>
+                    <button id="team-t3" onclick="selectTeam('t3')" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">
+                        Espadas
+                    </button>
+                    <button id="team-t4" onclick="selectTeam('t4')" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">
+                        Bastos
+                    </button>
                 </div>
-            </div>
-        </footer>
-    </div>
 
-
-    <!-- ========================================== -->
-    <!-- MODO PULSADOR MÓVIL (PARTICIPANTE)         -->
-    <!-- ========================================== -->
-    <div id="buzzer-layout" class="hidden min-h-screen bg-white text-slate-900 flex flex-col justify-between p-6">
-        <!-- CABECERA MÓVIL -->
-        <header class="flex flex-col items-center border-b border-slate-100 pb-4">
-            <h1 class="text-sm font-extrabold tracking-tight text-slate-850 uppercase flex items-center gap-1">
-                🔴 Duelo del Botón Rojo
-            </h1>
-            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase tech-font">Pulsador Móvil Oficial</p>
-        </header>
-
-        <!-- CONFIGURACIÓN DEL EQUIPO ANTES DE ACTIVAR -->
-        <div id="buzzer-setup" class="flex-grow flex flex-col justify-center max-w-sm mx-auto w-full gap-6">
-            <div class="text-center">
-                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Paso 1 de 2</p>
-                <h3 class="text-lg font-bold text-slate-800">Sincronización del Equipo</h3>
-            </div>
-
-            <!-- PIN INYECTADO -->
-            <div class="flex flex-col gap-1">
-                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">PIN del Tablero</label>
-                <input id="buzzer-pin-input" type="number" readonly class="bg-slate-50 border border-slate-200 text-slate-700 text-center text-lg font-bold tracking-widest rounded-xl p-3 focus:outline-none" placeholder="0000">
-            </div>
-
-            <!-- SELECCIONAR EQUIPO PERSONALIZADO -->
-            <div class="flex flex-col gap-1.5">
-                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Selecciona tu Equipo</label>
-                <div class="grid grid-cols-2 gap-3" id="buzzer-team-selector">
-                    <!-- Inyección dinámica de botones con nombres reales -->
-                </div>
-            </div>
-
-            <!-- BOTÓN CONFIRMAR CONEXIÓN -->
-            <button onclick="confirmBuzzerConnection()" class="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm rounded-2xl transition shadow-lg tracking-wider uppercase cursor-pointer">
-                Confirmar y Activar Pulsador ⚡
-            </button>
-        </div>
-
-        <!-- PANTALLA DEL BOTÓN ROJO GIGANTE (ACTIVO) -->
-        <div id="buzzer-active" class="hidden flex-grow flex flex-col items-center justify-center gap-6">
-            <div class="text-center">
-                <span id="buzzer-team-tag" class="text-xs font-black uppercase bg-slate-100 text-slate-800 px-3 py-1 rounded-full border border-slate-200 tracking-wider">EQUIPO</span>
-                <p id="buzzer-screen-status" class="text-xs text-slate-400 mt-2 font-semibold">Esperando el inicio de la pregunta en la pantalla...</p>
-            </div>
-
-            <!-- BOTÓN ROJO GIGANTE SOBRE FONDO BLANCO -->
-            <div class="relative w-64 h-64 flex items-center justify-center">
-                <button id="giant-buzzer-button" onclick="triggerMobileBuzz()" class="w-56 h-56 rounded-full bg-gradient-to-b from-red-500 to-red-600 border-8 border-slate-100 shadow-2xl active:scale-95 transition-transform duration-75 flex items-center justify-center text-white text-3xl font-black uppercase cursor-pointer relative z-10 select-none">
-                    PULSAR
+                <button onclick="confirmBuzzerConnection()" class="w-full max-w-md mx-auto py-3.5 bg-slate-950 text-white font-extrabold text-sm rounded-xl tracking-wider hover:bg-slate-800 active:scale-95 transition flex items-center justify-center gap-2 cursor-pointer uppercase">
+                    Unirse a la Partida 🤝
                 </button>
-                <div class="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-25"></div>
             </div>
 
-            <div class="text-[10px] text-slate-400 flex items-center gap-1.5 uppercase tracking-widest font-bold">
-                <span id="buzzer-online-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
-                <span>Sincronización segura activa</span>
+            <!-- Botón Rojo Gigante sobre Fondo Blanco (Paso 2: Activo) -->
+            <div id="buzzer-active" class="hidden flex-grow flex flex-col items-center justify-center gap-6">
+                <div class="text-center">
+                    <span id="buzzer-team-tag" class="text-xs font-black uppercase bg-slate-100 text-slate-800 px-3 py-1 rounded-full border border-slate-200 tracking-wider">EQUIPO</span>
+                    <p id="buzzer-screen-status" class="text-xs text-slate-400 mt-2 font-semibold">Esperando que el docente active los pulsadores...</p>
+                </div>
+
+                <!-- BOTÓN ROJO GIGANTE SOBRE FONDO BLANCO -->
+                <div class="relative w-64 h-64 flex items-center justify-center">
+                    <button id="giant-buzzer-button" disabled onclick="triggerMobileBuzz()" class="w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center relative z-10 select-none">
+                        PULSAR
+                    </button>
+                    <div class="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-25"></div>
+                </div>
+
+                <div class="text-[10px] text-slate-400 flex items-center gap-1.5 uppercase tracking-widest font-bold">
+                    <span>ntfy Sincronizado</span>
+                    <span class="text-slate-200">•</span>
+                    <span>Táctil Habilitado</span>
+                </div>
+            </div>
+
+        </section>
+
+
+        <!-- ================= PANTALLA 4: PANTALLA DE FIN DE PARTIDA (PODIO) ================= -->
+        <section id="podium-screen" class="hidden w-full max-w-3xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+            <div class="absolute -right-24 -top-24 w-72 h-72 bg-emerald-600/10 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -left-24 -bottom-24 w-72 h-72 bg-amber-600/5 rounded-full blur-3xl pointer-events-none"></div>
+            
+            <span class="text-xs font-bold tracking-widest text-emerald-500 uppercase bg-emerald-500/10 px-4 py-1.5 rounded-full border border-emerald-500/20 tech-font">
+                Resultados de la Partida
+            </span>
+            
+            <h2 class="text-4xl md:text-5xl font-black text-white mt-6 mb-2 tracking-tight">
+                🏆 ¡Fin de la Partida!
+            </h2>
+            <p class="text-slate-400 text-sm max-w-md mx-auto mb-10 leading-relaxed">
+                El duelo ha concluido. Aquí tienen el podio de los equipos que mejor mantuvieron sus marcadores en esta inmersión de la complejidad:
+            </p>
+
+            <!-- Lista Ordenada de Ganadores -->
+            <div id="podium-container" class="flex flex-col gap-4 max-w-md mx-auto mb-10">
+                <!-- Se inyectan dinámicamente con las posiciones finales -->
+            </div>
+
+            <div class="flex flex-col sm:flex-row justify-center gap-4">
+                <button onclick="backToSetup()" class="px-8 py-4 bg-slate-900 hover:bg-slate-800 text-slate-300 font-bold text-sm rounded-xl border border-slate-800 transition active:scale-95 cursor-pointer uppercase tracking-wider">
+                    🔄 Nueva Partida (Nuevos Equipos)
+                </button>
+                <button onclick="restartSameGame()" class="px-8 py-4 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-black text-sm rounded-xl shadow-lg shadow-red-950/20 transition active:scale-95 cursor-pointer uppercase tracking-wider">
+                    🎯 Jugar de nuevo con mismos Equipos
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- PIE DE PÁGINA -->
+    <footer class="border-t border-slate-950 bg-slate-950/90 py-5 px-6 text-center text-xs text-slate-500 mt-12">
+        <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+            <div>
+                Consola "El Duelo de la Complejidad" — Desarrollada para Edgar Morin.
+            </div>
+            <div id="footer-actions" class="flex gap-4">
+                <button onclick="restartGame()" class="text-slate-400 hover:text-white transition underline font-semibold cursor-pointer">Reiniciar Preguntas</button>
             </div>
         </div>
-
-        <!-- PIE DE PÁGINA MÓVIL -->
-        <footer class="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-3">
-            El Duelo de la Complejidad. No cierren esta ventana.
-        </footer>
-    </div>
-
+    </footer>
 
     <script>
-        // --- 1. Base de Datos Epistemológica (Las 10 premisas con explicaciones desglosadas) ---
+        // --- 1. Base de Datos de Preguntas y Desglose Epistemológico ---
         const rawPremises = [
             {
                 id: 1,
@@ -374,8 +439,8 @@
                 p1: "El pensamiento complejo rechaza integrar el orden y busca eliminar por completo cualquier tipo de pensamiento simplificador.",
                 p2: "La complejidad no es una palabra que aporte soluciones inmediatas, sino que se presenta como un desafío y una palabra problema.",
                 correct: "F-V",
-                p1Explanation: "La premisa 1 es FALSA. El pensamiento complejo no elimina la simplicidad; por el contrario, integra activamente los principios de orden y claridad, rechazando únicamente sus consecuencias reduccionistas y cegadoras.",
-                p2Explanation: "La premisa 2 es VERDADERA. Edgar Morin define la complejidad como un desafío conceptual y una 'palabra problema', no como una fórmula mágica de resolución inmediata."
+                exp1: "El pensamiento complejo no elimina la simplicidad; por el contrario, integra los principios de orden y claridad, rechazando únicamente sus consecuencias reduccionistas y cegadoras.",
+                exp2: "Morin define la complejidad como un desafío conceptual y una 'palabra problema', no como una fórmula mágica de resolución inmediata."
             },
             {
                 id: 2,
@@ -383,8 +448,8 @@
                 p1: "Uno de los axiomas centrales de la complejidad es la imposibilidad teórica de alcanzar una omnisciencia o un conocimiento completo.",
                 p2: "La totalidad es la máxima verdad a la que debe aspirar ciegamente cualquier sistema de pensamiento científico moderno.",
                 correct: "V-F",
-                p1Explanation: "La premisa 1 es VERDADERA. La imposibilidad de la omnisciencia y la incompletitud inherente a todo saber son bases fundamentales de esta epistemología.",
-                p2Explanation: "La premisa 2 es FALSA. Apoyándose en Theodor Adorno, el autor sostiene que 'la totalidad es la no verdad', rechazando la ambición totalitaria de los dogmas cerrados."
+                exp1: "La imposibilidad de la omnisciencia y la incompletitud inherente a todo saber son bases fundamentales de esta epistemología.",
+                exp2: "Apoyándose en Theodor Adorno, el autor sostiene que 'la totalidad es la no verdad', rechazando la ambición totalitaria de los dogmas cerrados."
             },
             {
                 id: 3,
@@ -392,8 +457,8 @@
                 p1: "La ciencia avanza basándose exclusivamente en el consenso unánime de los investigadores, evitando todo conflicto o rivalidad teórica.",
                 p2: "Cada victoria del reduccionismo en la ciencia se paga inevitablemente con la introducción de una nueva complejización histórica o conceptual.",
                 correct: "F-V",
-                p1Explanation: "La premisa 1 es FALSA. La ciencia es una actividad humana compleja que avanza en medio del conflicto, la tensión y la rivalidad de teorías, no por consensos unánimes o estáticos.",
-                p2Explanation: "La premisa 2 es VERDADERA. Intentar reducir los fenómenos de un nivel (ej. explicar la biología solo mediante la física) obliga siempre a introducir nuevas variables organizativas que complejizan el modelo."
+                exp1: "La ciencia es una actividad humana compleja que avanza en medio del conflicto, la tensión y la rivalidad de teorías, no por consensos unánimes o estáticos.",
+                exp2: "Intentar reducir los fenómenos de un nivel (ej. explicar la biología solo mediante la física) obliga siempre a introducir nuevas variables organizativas que complejizan el modelo."
             },
             {
                 id: 4,
@@ -401,8 +466,8 @@
                 p1: "La información existe de forma independiente en el universo físico desde siempre, mucho antes de la aparición de la vida organizada.",
                 p2: "El conocimiento es puramente acumulativo y no requiere ninguna separación de fronteras entre el sujeto conocedor y el mundo exterior.",
                 correct: "F-F",
-                p1Explanation: "La premisa 1 es FALSA. La información no es una entidad física pura flotando en el cosmos; requiere de la computación o interpretación de un ser viviente para constituirse como tal.",
-                p2Explanation: "La premisa 2 es FALSA. El conocimiento no se reduce a acumular datos; demanda de hecho una paradoja de apertura y clausura, así como una clara frontera entre el sujeto cognoscente y su entorno."
+                exp1: "La información no es una entidad física pura flotando en el cosmos; requiere de la computación o interpretación de un ser viviente para constituirse como tal.",
+                exp2: "El conocimiento no se reduce a acumular datos; demanda una paradoja de apertura y clausura, así como una clara frontera entre el sujeto cognoscente y su entorno."
             },
             {
                 id: 5,
@@ -410,8 +475,8 @@
                 p1: "Un paradigma funciona como un controlador absoluto de la lógica del discurso y determina las relaciones entre las categorías maestras.",
                 p2: "Las ideologías son vistas como sistemas de ideas en su grado cero, siendo este un término totalmente neutro que no denuncia falsedades.",
                 correct: "V-V",
-                p1Explanation: "La premisa 1 es VERDADERA. El paradigma ejerce un control semántico y lógico riguroso, definiendo qué relaciones conceptuales son válidas y cuáles no.",
-                p2Explanation: "La premisa 2 es VERDADERA. Desde esta perspectiva, la ideología se define de manera neutral en su 'grado cero' simplemente como un sistema organizado de ideas, sin la carga peyorativa clásica de falsedad."
+                exp1: "El paradigma ejerce un control semántico y lógico riguroso, definiendo qué relaciones conceptuales son válidas y cuáles no.",
+                exp2: "Desde esta perspectiva, la ideología se define de manera neutral en su 'grado cero' simplemente como un sistema organizado de ideas, sin la carga peyorativa clásica."
             },
             {
                 id: 6,
@@ -419,8 +484,8 @@
                 p1: "La verdadera racionalidad es de carácter evolutivo, reconoce sus propios límites y es capaz de mantener un diálogo con lo irracional.",
                 p2: "La racionalización es el estado perfecto de la razón porque garantiza una coherencia lógica absoluta e inmune a las fallas empíricas.",
                 correct: "V-F",
-                p1Explanation: "La premisa 1 es VERDADERA. La racionalidad genuina es abierta, autocrítica y acepta la existencia de misterios o límites del conocimiento sin negar la lógica.",
-                p2Explanation: "La premisa 2 es FALSA. La racionalización es la patología o enemiga de la razón; constituye un 'delirio lógico' cerrado que ignora la realidad empírica para mantener intacta su coherencia interna."
+                exp1: "La racionalidad genuina es abierta, autocrítica y acepta la existencia de misterios o límites del conocimiento sin negar la lógica.",
+                exp2: "La racionalización es la patología o enemiga de la razón; constituye un 'delirio lógico' cerrado que ignora la realidad empírica para mantener intacta su coherencia."
             },
             {
                 id: 7,
@@ -428,8 +493,8 @@
                 p1: "El nuevo enfoque de la complejidad establece que el desorden es el único principio originario que anula cualquier forma de orden estructural.",
                 p2: "El orden, el desorden y la organización son principios complementarios e interdependientes que deben combinarse para explicar los fenómenos.",
                 correct: "F-V",
-                p1Explanation: "La premisa 1 es FALSA. Morin rechaza otorgar al desorden el papel de principio único u originario, desmarcándose de las posturas nihilistas que solo valoran el ruido o el caos.",
-                p2Explanation: "La premisa 2 es VERDADERA. El orden, el desorden y la organización forman un bucle recursivo y complementario (el tetragrama), indispensables de forma conjunta para comprender la realidad."
+                exp1: "Morin rechaza otorgar al desorden el papel de principio único u originario, desmarcándose de las posturas nihilistas que solo valoran el ruido o el caos.",
+                exp2: "El orden, el desorden y la organización forman un bucle recursivo y complementario (el tetragrama), indispensables de forma conjunta para comprender la realidad."
             },
             {
                 id: 8,
@@ -437,8 +502,8 @@
                 p1: "La ciencia progresaría mucho más rápido y mejor si se prohibiera estrictamente la migración clandestina de conceptos entre diferentes disciplinas.",
                 p2: "Las metáforas son perjudiciales para la epistemología compleja porque siempre generan malentendidos y carecen de un valor científico real.",
                 correct: "F-F",
-                p1Explanation: "La premisa 1 es FALSA. La transdisciplinariedad y la migración de conceptos oxigenan las disciplinas, mientras que la prohibición estricta de préstamos asfixiaría el avance científico.",
-                p2Explanation: "La premisa 2 es FALSA. Lejos de ser nocivas, las metáforas (como transferir la noción de 'información' o 'trabajo' de un área a otra) han sido motores creativos cruciales para los descubrimientos científicos."
+                exp1: "La transdisciplinariedad y la migración de conceptos oxigenan las disciplinas, mientras que la prohibición estricta de préstamos asfixiaría el avance científico.",
+                exp2: "Lejos de ser nocivas, las metáforas (como transferir la noción de 'información' o 'trabajo' de un área a otra) han sido motores creativos cruciales para los descubrimientos."
             },
             {
                 id: 9,
@@ -446,8 +511,8 @@
                 p1: "La humanidad se encuentra actualmente en la culminación de su historia intelectual, habiendo superado definitivamente la barbarie ideológica.",
                 p2: "En la actualidad habitamos una 'edad de hierro planetaria' y nos encontramos todavía en la etapa de prehistoria del verdadero espíritu humano.",
                 correct: "F-V",
-                p1Explanation: "La premisa 1 es FALSA. Nuestras teorías aún no logran convivir de manera pacífica y seguimos inmersos en dogmatismos destructivos.",
-                p2Explanation: "La premisa 2 es VERDADERA. Para Morin, transitamos una 'edad de hierro planetaria' caracterizada por la barbarie conceptual; el desarrollo pleno del espíritu humano es un horizonte todavía por conquistar."
+                exp1: "Nuestras teorías aún no logran convivir de manera pacífica y seguimos inmersos en dogmatismos destructivos.",
+                exp2: "Para Morin, transitamos una 'edad de hierro planetaria' caracterizada por la barbarie conceptual y de las ideas; el desarrollo pleno del espíritu humano es todavía por conquistar."
             },
             {
                 id: 10,
@@ -455,179 +520,146 @@
                 p1: "En el pensamiento complejo contemporáneo, el sujeto cognoscente debe ser reintegrado plenamente en su propia observación para no mutilar lo real.",
                 p2: "La objetividad científica es en realidad un resultado en el que el ser humano coopera activamente y actúa como coproductor junto al mundo exterior.",
                 correct: "V-V",
-                p1Explanation: "La premisa 1 es VERDADERA. Reintroducir al sujeto en la descripción del objeto es un principio metodológico fundamental para lograr un conocimiento honesto y no mutilado.",
-                p2Explanation: "La premisa 2 es VERDADERA. La objetividad no es un reflejo pasivo del exterior, sino un constructo en el que el sujeto interviene activamente, coproduciendo el saber en interacción con el mundo."
+                exp1: "Reintroducir al sujeto en la descripción del objeto es un principio metodológico fundamental para lograr un conocimiento honesto y no mutilado.",
+                exp2: "La objetividad no es un reflejo pasivo del exterior, sino un constructo en el que el sujeto interviene activamente, coproduciendo el saber en interacción con el mundo."
             }
         ];
 
-        // --- 2. Estado Global y Configuración de Roles ---
-        let role = "board"; // "board" (servidor) o "buzzer" (móvil)
-        let gamePin = "0000";
-        
-        // Equipos y Puntajes Iniciales
-        let teams = {
+        // --- 2. Estado Global de la Aplicación ---
+        let gamePin = "";
+        let isBuzzerRole = false;
+        let selectedBuzzerTeamKey = ""; // t1, t2, t3, t4
+        let eventSourceConnection = null;
+
+        const teams = {
             t1: "Oros",
             t2: "Copas",
             t3: "Espadas",
             t4: "Bastos"
         };
-        let scores = { t1: 5, t2: 5, t3: 5, t4: 5 };
 
-        // Duelistas activos de la ronda
-        let activeDuelists = { teamA: "t1", teamB: "t2" };
-        let isDuelStarted = false; // Indica si los pulsadores móviles están activados
-
-        let activeBuzzerState = false; // true si un duelista habilitado presionó el botón
-        let selectedBuzzerTeamKey = ""; // "t1", "t2", "t3" o "t4"
-        let currentAttempt = 1;        // 1 (primer intento), 2 (rebote)
-        let disabledOptions = new Set();
-        let isQuestionResolved = false;
+        const scores = {
+            t1: 5,
+            t2: 5,
+            t3: 5,
+            t4: 5
+        };
 
         let currentQuestionList = [];
         let activeQuestionIndex = 0;
-        let eventSourceConnection = null;
+        let activeBuzzerState = false; // true si ya hubo zumbido registrado
+        let currentAttempt = 1;        // 1 (intento 1), 2 (rebote)
+        let disabledOptions = new Set();
+        let isQuestionResolved = false;
 
-        // Colors para marcar visualmente en la cabecera
-        const teamColors = {
-            t1: "border-amber-500/30 bg-amber-500/10 text-amber-400",
-            t2: "border-blue-500/30 bg-blue-500/10 text-blue-400",
-            t3: "border-red-500/30 bg-red-500/10 text-red-400",
-            t4: "border-emerald-500/30 bg-emerald-500/10 text-emerald-400"
+        let activeDuelists = {
+            teamA: "t3",
+            teamB: "t2"
         };
+        let currentWinnerOfBuzzer = null; // t1, t2, etc.
 
-        // --- 3. Generador de Efectos de Sonido ---
-        let audioCtx = null;
-        function playSound(type) {
-            try {
-                if (!audioCtx) {
-                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                }
-                if (audioCtx.state === 'suspended') {
-                    audioCtx.resume();
-                }
-                const osc = audioCtx.createOscillator();
-                const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-
-                if (type === 'buzz') {
-                    osc.type = 'sawtooth';
-                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
-                    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.3);
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.3);
-                } else if (type === 'correct') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
-                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
-                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
-                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-                } else if (type === 'incorrect') {
-                    osc.type = 'triangle';
-                    osc.frequency.setValueAtTime(130.81, audioCtx.currentTime);
-                    osc.frequency.setValueAtTime(110.00, audioCtx.currentTime + 0.15);
-                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.4);
-                } else if (type === 'click') {
-                    osc.type = 'sine';
-                    osc.frequency.setValueAtTime(900, audioCtx.currentTime);
-                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
-                    osc.start();
-                    osc.stop(audioCtx.currentTime + 0.05);
-                }
-            } catch (e) {
-                console.log("Audio Context no soportado.");
-            }
-        }
-
-        // --- 4. Mezclador No-Repetitivo (Fisher-Yates) ---
-        function shuffle(array) {
-            let currentIndex = array.length, randomIndex;
-            while (currentIndex !== 0) {
-                randomIndex = Math.floor(Math.random() * currentIndex);
-                currentIndex--;
-                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
-            }
-            return array;
-        }
-
-        // --- 5. Inicialización y Rutas URL ---
+        // --- 3. Cargador Inicial y Parsing de Parámetros ---
         window.onload = function() {
-            const params = new URLSearchParams(window.location.search);
-            const urlRole = params.get("role");
-            const urlPin = params.get("pin");
-
-            if (urlRole === "buzzer" && urlPin) {
-                // Modo Participante (Pulsador Móvil)
-                role = "buzzer";
-                gamePin = urlPin;
+            const urlParams = new URLSearchParams(window.location.search);
+            const role = urlParams.get('role');
+            const pin = urlParams.get('pin');
+            
+            if (role === 'buzzer' && pin) {
+                // Modo Participante Móvil
+                isBuzzerRole = true;
+                gamePin = pin;
                 
-                // Cargar nombres reales pasados en la URL
-                teams.t1 = params.get("t1") || "Equipo 1";
-                teams.t2 = params.get("t2") || "Equipo 2";
-                teams.t3 = params.get("t3") || "Equipo 3";
-                teams.t4 = params.get("t4") || "Equipo 4";
+                // Extraer nombres dinámicos de equipos si vienen en la URL
+                teams.t1 = urlParams.get('t1') || "Oros";
+                teams.t2 = urlParams.get('t2') || "Copas";
+                teams.t3 = urlParams.get('t3') || "Espadas";
+                teams.t4 = urlParams.get('t4') || "Bastos";
 
-                document.getElementById("buzzer-layout").classList.remove("hidden");
-                document.getElementById("buzzer-pin-input").value = gamePin;
-                
-                // Inyectar selectores móviles
-                const container = document.getElementById("buzzer-team-selector");
-                container.innerHTML = `
-                    <button onclick="selectTeam('t1')" id="team-t1" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">🟡 ${teams.t1}</button>
-                    <button onclick="selectTeam('t2')" id="team-t2" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">🏆 ${teams.t2}</button>
-                    <button onclick="selectTeam('t3')" id="team-t3" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">⚔️ ${teams.t3}</button>
-                    <button onclick="selectTeam('t4')" id="team-t4" class="p-3 border border-slate-200 rounded-xl flex items-center justify-center font-bold transition text-xs text-slate-800 text-center">🪵 ${teams.t4}</button>
-                `;
+                // Actualizar interfaz del celular
+                document.getElementById('team-t1').innerText = teams.t1;
+                document.getElementById('team-t2').innerText = teams.t2;
+                document.getElementById('team-t3').innerText = teams.t3;
+                document.getElementById('team-t4').innerText = teams.t4;
+
+                document.getElementById('setup-screen').classList.add('hidden');
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('buzzer-screen').classList.remove('hidden');
 
                 initializeBuzzerSyncChannel();
             } else {
-                // Modo Controlador Principal (Docente)
-                role = "board";
+                // Modo Docente / Proyector
+                document.getElementById('setup-screen').classList.remove('hidden');
+                document.getElementById('game-screen').classList.add('hidden');
+                document.getElementById('buzzer-screen').classList.add('hidden');
+                
+                // Autogenerar PIN aleatorio de 4 dígitos
                 gamePin = Math.floor(1000 + Math.random() * 9000).toString();
-                document.getElementById("board-layout").classList.remove("hidden");
-                document.getElementById("board-pin-display").innerText = gamePin;
-                document.getElementById("welcome-pin-display").innerText = gamePin;
             }
         };
 
-        // --- 6. Confirmación de Configuración y generación de QR ---
+        // --- 4. Inicialización de la Partida (Docente) ---
         function confirmAndGenerateSession() {
             playSound('click');
             
-            // Leer nombres de los inputs
-            teams.t1 = document.getElementById("setup-t1").value.trim() || "Equipo 1";
-            teams.t2 = document.getElementById("setup-t2").value.trim() || "Equipo 2";
-            teams.t3 = document.getElementById("setup-t3").value.trim() || "Equipo 3";
-            teams.t4 = document.getElementById("setup-t4").value.trim() || "Equipo 4";
+            // Asignar los valores personalizados ingresados en el formulario
+            teams.t1 = document.getElementById('input-team-t1').value.trim() || "Oros";
+            teams.t2 = document.getElementById('input-team-t2').value.trim() || "Copas";
+            teams.t3 = document.getElementById('input-team-t3').value.trim() || "Espadas";
+            teams.t4 = document.getElementById('input-team-t4').value.trim() || "Bastos";
 
-            // Generar enlace dinámico con parámetros de nombres
-            const currentUrl = window.location.origin + window.location.pathname;
-            const buzzerUrl = `${currentUrl}?role=buzzer&pin=${gamePin}&t1=${encodeURIComponent(teams.t1)}&t2=${encodeURIComponent(teams.t2)}&t3=${encodeURIComponent(teams.t3)}&t4=${encodeURIComponent(teams.t4)}`;
+            // Sincronizar nombres con el Scoreboard de la pantalla principal
+            document.getElementById('score-name-t1').innerText = teams.t1;
+            document.getElementById('score-name-t2').innerText = teams.t2;
+            document.getElementById('score-name-t3').innerText = teams.t3;
+            document.getElementById('score-name-t4').innerText = teams.t4;
+
+            // Actualizar selectores de duelo con los nombres reales
+            updateDuelSelectors();
+
+            // Construir URL móvil dinámica con nombres de equipos para que los reciba el celular
+            const domain = window.location.origin + window.location.pathname;
+            const mobileUrl = `${domain}?role=buzzer&pin=${gamePin}&t1=${encodeURIComponent(teams.t1)}&t2=${encodeURIComponent(teams.t2)}&t3=${encodeURIComponent(teams.t3)}&t4=${encodeURIComponent(teams.t4)}`;
             
             // Generar código QR
-            const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=0f172a&data=${encodeURIComponent(buzzerUrl)}`;
-            document.getElementById("welcome-qr-image").src = qrApiUrl;
+            const qrImg = document.getElementById('qr-code-img');
+            qrImg.src = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(mobileUrl)}`;
+            
+            // Colocar PIN en la interfaz
+            document.getElementById('session-pin-text').innerText = gamePin;
 
-            // Ocultar bloque setup, mostrar bloque QR y activar el inicio del juego
-            document.getElementById("setup-teams-block").classList.add("hidden");
-            document.getElementById("setup-qr-block").classList.remove("hidden");
-            document.getElementById("btn-start-game").disabled = false;
-            document.getElementById("btn-start-game").classList.remove("hidden");
+            // Transición de pantalla de configuración a juego
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('header-progress').classList.remove('hidden');
 
-            // Sincronizar el canal principal
+            // Barajar preguntas
+            currentQuestionList = shuffle([...rawPremises]);
+            activeQuestionIndex = 0;
+            loadQuestion(0);
+
+            // Iniciar escucha del canal en tiempo real
             initializeBoardSyncChannel();
         }
 
-        // --- 7. Sincronización Real a través de ntfy.sh (SSE y POST) ---
+        function updateDuelSelectors() {
+            const d1 = document.getElementById('duel-team-1');
+            const d2 = document.getElementById('duel-team-2');
+            
+            d1.innerHTML = `
+                <option value="t1">${teams.t1}</option>
+                <option value="t2">${teams.t2}</option>
+                <option value="t3" selected>${teams.t3}</option>
+                <option value="t4">${teams.t4}</option>
+            `;
+            d2.innerHTML = `
+                <option value="t1">${teams.t1}</option>
+                <option value="t2" selected>${teams.t2}</option>
+                <option value="t3">${teams.t3}</option>
+                <option value="t4">${teams.t4}</option>
+            `;
+        }
+
+        // --- 5. Flujos en Tiempo Real de ntfy.sh (Server-Sent Events) ---
         function initializeBoardSyncChannel() {
             const topic = `duelo_complejidad_${gamePin}`;
             if (eventSourceConnection) eventSourceConnection.close();
@@ -657,6 +689,12 @@
                     const msg = JSON.parse(payload.message);
                     if (msg && msg.event === "next_question") {
                         resetMobileBuzzerState();
+                    } else if (msg && msg.event === "enable_buzzers") {
+                        enableMobileBuzzerForDuel(msg.teamA, msg.teamB);
+                    } else if (msg && msg.event === "disable_buzzers") {
+                        disableMobileBuzzer();
+                    } else if (msg && msg.event === "buzz") {
+                        disableMobileBuzzerOnBuzz(msg.teamKey);
                     }
                 } catch (e) {
                     // Ignorar pings
@@ -666,21 +704,25 @@
 
         // Captura remota de pulsación
         function handleRemoteBuzz(teamKey) {
-            if (isQuestionResolved || activeBuzzerState || !isDuelStarted) return;
+            // Solo procesar si la pregunta está activa, no resuelta y los pulsadores ya fueron habilitados por el docente
+            if (isQuestionResolved || !activeBuzzerState || currentWinnerOfBuzzer !== null) return;
             
-            // Validar si el equipo que pulsó está habilitado para el duelo activo
-            if (teamKey !== activeDuelists.teamA && teamKey !== activeDuelists.teamB) {
-                return; // Ignorar si no está en el duelo de la ronda
-            }
+            // Validar si el equipo pertenece al duelo configurado en esta ronda
+            if (teamKey !== activeDuelists.teamA && teamKey !== activeDuelists.teamB) return;
 
             playSound('buzz');
-            activeBuzzerState = true;
-            selectedBuzzerTeamKey = teamKey;
+            currentWinnerOfBuzzer = teamKey;
 
-            // Bloquear los botones manuales de mesa
-            blockManualBuzzers();
+            // Desactivar temporalmente los pulsadores remotos
+            sendDisableBuzzersSignal();
 
-            // Habilitar opciones de respuesta para el duelista activo
+            // Sincronizar UI del proyector
+            const display = document.getElementById('turn-text');
+            const ping = document.getElementById('turn-ping');
+            ping.className = "w-3.5 h-3.5 rounded-full bg-red-500 animate-ping";
+            display.innerHTML = `⚡ <span class="font-extrabold text-white uppercase">PULSACIÓN EN MESA:</span> Turno de respuesta para el equipo <span class="text-red-400">${teams[teamKey].toUpperCase()}</span>.`;
+
+            // Habilitar los botones de opciones lógicas en el proyector
             const options = ['V-V', 'V-F', 'F-V', 'F-F'];
             options.forEach(opt => {
                 const btn = document.getElementById(`opt-${opt}`);
@@ -688,70 +730,51 @@
                     btn.disabled = false;
                 }
             });
-
-            updateStateDisplay();
         }
 
-        // --- 8. Lógica del Tablero del Docente (Board) ---
-        function startGame() {
-            playSound('click');
-            document.getElementById('welcome-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('header-progress').classList.remove('hidden');
+        // --- 6. Inicialización de Preguntas y Lógica de Selección ---
+        function loadQuestion(index) {
+            if (index >= currentQuestionList.length) {
+                finishAndShowPodium();
+                return;
+            }
 
-            // Inyectar selectores de duelo con los nombres reales
-            const s1 = document.getElementById("duel-team-1");
-            const s2 = document.getElementById("duel-team-2");
-            const renderOptions = () => `
-                <option value="t1">🟡 ${teams.t1}</option>
-                <option value="t2">🏆 ${teams.t2}</option>
-                <option value="t3">⚔️ ${teams.t3}</option>
-                <option value="t4">🪵 ${teams.t4}</option>
-            `;
-            s1.innerHTML = renderOptions();
-            s2.innerHTML = renderOptions();
+            isQuestionResolved = false;
+            activeBuzzerState = false;
+            currentAttempt = 1;
+            currentWinnerOfBuzzer = null;
+            disabledOptions.clear();
+
+            document.getElementById('justification-panel').classList.add('hidden');
+            document.getElementById('btn-reveal').disabled = true;
+
+            const q = currentQuestionList[index];
+            document.getElementById('concept-number').innerText = `PREGUNTA #${index + 1} DE 10`;
+            document.getElementById('concept-title').innerText = q.concept;
+            document.getElementById('premise-1-text').innerText = q.p1;
+            document.getElementById('premise-2-text').innerText = q.p2;
             
-            // Valores iniciales por defecto diferentes
-            s1.value = "t1";
-            s2.value = "t2";
+            document.getElementById('justification-p1').innerText = q.exp1;
+            document.getElementById('justification-p2').innerText = q.exp2;
 
-            renderScoreboard();
-            restartGame();
-        }
-
-        function backToMenu() {
-            playSound('click');
-            document.getElementById('welcome-screen').classList.remove('hidden');
-            document.getElementById('game-screen').classList.add('hidden');
-            document.getElementById('header-progress').classList.add('hidden');
-        }
-
-        function restartGame() {
-            currentQuestionList = shuffle([...rawPremises]);
-            activeQuestionIndex = 0;
-            loadQuestion(0);
-        }
-
-        function renderScoreboard() {
-            const container = document.getElementById("header-scoreboard");
-            container.innerHTML = "";
-            Object.keys(teams).forEach(key => {
-                container.innerHTML += `
-                    <div class="flex items-center gap-1.5 border px-3 py-1 rounded-lg text-xs font-bold tech-font ${teamColors[key]}">
-                        <span class="truncate max-w-[80px]">${teams[key]}</span>
-                        <span class="bg-slate-950/50 px-1.5 py-0.5 rounded text-white font-black text-xs">${scores[key]}</span>
-                        <!-- Botones manuales de ajuste -->
-                        <button onclick="adjustScore('${key}', 1)" class="text-[10px] hover:text-white font-black ml-1 cursor-pointer hover:bg-slate-800 rounded w-4 h-4 flex items-center justify-center">+</button>
-                        <button onclick="adjustScore('${key}', -1)" class="text-[10px] hover:text-white font-black cursor-pointer hover:bg-slate-800 rounded w-4 h-4 flex items-center justify-center">-</button>
-                    </div>
-                `;
+            // Deshabilitar respuestas en el proyector por seguridad inicial
+            const options = ['V-V', 'V-F', 'F-V', 'F-F'];
+            options.forEach(opt => {
+                const btn = document.getElementById(`opt-${opt}`);
+                btn.disabled = true;
+                btn.className = "group bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-40 border-2 border-slate-800 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 cursor-pointer active:scale-95";
             });
-        }
 
-        function adjustScore(teamKey, amount) {
-            playSound('click');
-            scores[teamKey] = Math.max(0, scores[teamKey] + amount);
-            renderScoreboard();
+            // Reestablecer banner de turno
+            const display = document.getElementById('turn-text');
+            const ping = document.getElementById('turn-ping');
+            ping.className = "w-3.5 h-3.5 rounded-full bg-slate-700";
+            display.innerText = 'Selecciona los equipos del duelo y haz clic en "Activar Pulsadores"';
+
+            updateProgressHeader();
+
+            // Notificar a los dispositivos móviles para que limpien su visor
+            sendSignal({ event: "next_question" });
         }
 
         function setupDuelTeams() {
@@ -763,116 +786,64 @@
         function startDuelRound() {
             setupDuelTeams();
             if (activeDuelists.teamA === activeDuelists.teamB) {
-                alert("Debes seleccionar dos equipos diferentes para el duelo.");
+                const display = document.getElementById('turn-text');
+                display.innerHTML = `⚠️ <span class="text-red-500 font-bold uppercase">Error:</span> Selecciona dos equipos distintos para el duelo.`;
+                playSound('incorrect');
                 return;
             }
             playSound('click');
-            isDuelStarted = true;
-            activeBuzzerState = false;
+            activeBuzzerState = true;
             currentAttempt = 1;
+            currentWinnerOfBuzzer = null;
 
             // Inyectar botones de zumbido manual específicos para el duelo
             const container = document.getElementById("manual-buzzers-container");
             container.innerHTML = `
-                <button onclick="handleRemoteBuzz('${activeDuelists.teamA}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">Pulsar ${teams[activeDuelists.teamA]}</button>
-                <button onclick="handleRemoteBuzz('${activeDuelists.teamB}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-lg text-xs font-bold text-slate-300">Pulsar ${teams[activeDuelists.teamB]}</button>
+                <button onclick="handleRemoteBuzz('${activeDuelists.teamA}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-880 border border-slate-700 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">Pulsar ${teams[activeDuelists.teamA]}</button>
+                <button onclick="handleRemoteBuzz('${activeDuelists.teamB}')" class="px-3 py-1.5 bg-slate-950 hover:bg-slate-880 border border-slate-700 rounded-lg text-xs font-bold text-slate-300 hover:text-white transition">Pulsar ${teams[activeDuelists.teamB]}</button>
             `;
 
             updateStateDisplay();
-        }
 
-        function blockManualBuzzers() {
-            const container = document.getElementById("manual-buzzers-container");
-            const btns = container.querySelectorAll("button");
-            btns.forEach(b => {
-                b.disabled = true;
-                b.classList.add("opacity-50");
+            // Sincronizar activación de pulsadores móviles en tiempo real
+            sendSignal({
+                event: "enable_buzzers",
+                teamA: activeDuelists.teamA,
+                teamB: activeDuelists.teamB
             });
         }
 
-        function loadQuestion(index) {
-            if (index >= currentQuestionList.length) {
-                restartGame();
-                return;
-            }
-
-            isQuestionResolved = false;
-            activeBuzzerState = false;
-            isDuelStarted = false; // Requiere re-configurar duelistas en cada pregunta
-            currentAttempt = 1;
-            disabledOptions.clear();
-
-            document.getElementById('justification-panel').classList.add('hidden');
-            document.getElementById('btn-reveal').disabled = true;
-
-            const q = currentQuestionList[index];
-            
-            // Carga de textos
-            document.getElementById('concept-number').innerText = `PREGUNTA #${index + 1} DE 10`;
-            document.getElementById('concept-title').innerText = q.concept;
-            document.getElementById('premise-1-text').innerText = q.p1;
-            document.getElementById('premise-2-text').innerText = q.p2;
-            
-            // Desglose de justificaciones
-            document.getElementById('justification-p1').innerText = q.p1Explanation;
-            document.getElementById('justification-p2').innerText = q.p2Explanation;
-
-            // Restablecer opciones lógicas en gris
-            const options = ['V-V', 'V-F', 'F-V', 'F-F'];
-            options.forEach(opt => {
-                const btn = document.getElementById(`opt-${opt}`);
-                btn.disabled = true; 
-                btn.className = "group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95";
-            });
-
-            // Limpiar contenedor de simulación manual
-            document.getElementById("manual-buzzers-container").innerHTML = `
-                <span class="text-xs text-slate-500 font-bold uppercase py-1.5">Bloqueado hasta iniciar duelo</span>
-            `;
-
-            // Enviar reset a los pulsadores móviles
-            const topic = `duelo_complejidad_${gamePin}`;
-            fetch(`https://ntfy.sh/${topic}`, {
-                method: 'POST',
-                body: JSON.stringify({ event: "next_question" })
-            }).catch(e => console.log("Fallo de envío"));
-
-            updateStateDisplay();
-            updateProgressHeader();
-        }
-
+        // --- 8. Resolución del Quiz de Preguntas (Consola de Proyección) ---
         function chooseOption(selectedOption) {
-            if (isQuestionResolved || !activeBuzzerState) return;
+            if (isQuestionResolved || currentWinnerOfBuzzer === null) return;
 
             const q = currentQuestionList[activeQuestionIndex];
             const isCorrect = (selectedOption === q.correct);
             const btn = document.getElementById(`opt-${selectedOption}`);
 
-            // Determinar oponente del duelo
-            const opponentTeamKey = (selectedBuzzerTeamKey === activeDuelists.teamA) ? activeDuelists.teamB : activeDuelists.teamA;
+            const firstDuelist = currentWinnerOfBuzzer;
+            const secondDuelist = (firstDuelist === activeDuelists.teamA) ? activeDuelists.teamB : activeDuelists.teamA;
 
             if (isCorrect) {
-                // Acierto inmediato
                 playSound('correct');
-                btn.className = "group relative bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 correct-glow";
+                btn.className = "group bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 correct-glow";
                 
-                // El ganador conserva sus puntos. El oponente pierde 1 punto.
-                scores[opponentTeamKey] = Math.max(0, scores[opponentTeamKey] - 1);
-                renderScoreboard();
-
-                resolveRonda(true, selectedBuzzerTeamKey);
+                // El que presionó respondió bien: conserva sus puntos y el oponente los pierde
+                adjustManualScore(secondDuelist, -1);
+                resolveRonda(firstDuelist, secondDuelist, true);
             } else {
-                // Fallo del equipo actual
                 playSound('incorrect');
-                btn.className = "group relative bg-red-950/80 text-red-100 border-2 border-red-500 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 opacity-80 transition-all duration-150 shake";
+                btn.className = "group bg-red-950/80 text-red-100 border-2 border-red-500 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 opacity-80 transition-all duration-150 shake";
                 btn.disabled = true;
                 disabledOptions.add(selectedOption);
 
                 if (currentAttempt === 1) {
-                    // Traspasar el turno automáticamente al oponente (REBOTE)
+                    // Primer equipo falla: pierde punto de inmediato y cede ventaja (rebote)
+                    adjustManualScore(firstDuelist, -1);
                     currentAttempt = 2;
-                    selectedBuzzerTeamKey = opponentTeamKey; // El oponente toma el control
-                    
+                    currentWinnerOfBuzzer = secondDuelist; // Turno pasa por rebote
+
+                    // Bloquear las incorrectas y activar las restantes para el segundo equipo
                     const options = ['V-V', 'V-F', 'F-V', 'F-F'];
                     options.forEach(opt => {
                         const b = document.getElementById(`opt-${opt}`);
@@ -880,20 +851,17 @@
                             b.disabled = false;
                         }
                     });
+
                     updateStateDisplay();
                 } else {
-                    // Ambos fallaron la respuesta
-                    // Penalizar a ambos con -1 punto
-                    scores[activeDuelists.teamA] = Math.max(0, scores[activeDuelists.teamA] - 1);
-                    scores[activeDuelists.teamB] = Math.max(0, scores[activeDuelists.teamB] - 1);
-                    renderScoreboard();
-
-                    resolveRonda(false, null);
+                    // Segundo equipo también falla por rebote: pierde punto
+                    adjustManualScore(secondDuelist, -1);
+                    resolveRonda(firstDuelist, secondDuelist, false);
                 }
             }
         }
 
-        function resolveRonda(completedSuccessfully, winnerKey) {
+        function resolveRonda(firstTeam, secondTeam, success) {
             isQuestionResolved = true;
             blockAllOptions();
             document.getElementById('btn-reveal').disabled = false;
@@ -901,21 +869,22 @@
 
             const q = currentQuestionList[activeQuestionIndex];
             const correctBtn = document.getElementById(`opt-${q.correct}`);
-            
-            // Destacar combinación ganadora
-            correctBtn.className = "group relative bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 correct-glow";
+            correctBtn.className = "group bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center gap-1 transition-all duration-150 correct-glow";
             correctBtn.disabled = true;
 
             const display = document.getElementById('turn-text');
             const ping = document.getElementById('turn-ping');
 
-            if (completedSuccessfully && winnerKey) {
+            if (success) {
                 ping.className = "w-3.5 h-3.5 rounded-full bg-emerald-500";
-                display.innerHTML = `🏆 <span class="text-emerald-400 font-bold uppercase tracking-wider">Duelo Cerrado:</span> El equipo <span class="text-white">${teams[winnerKey].toUpperCase()}</span> resolvió correctamente el concepto de Morin.`;
+                display.innerHTML = `🏆 <span class="text-emerald-400 font-bold uppercase">¡Duelo Resuelto!</span> Ganador del Duelo: <span class="text-emerald-300 font-extrabold uppercase">${teams[firstTeam]}</span> (Conserva sus puntos). Perdedor: <span class="text-red-400 font-extrabold uppercase">${teams[secondTeam]}</span> (-1 punto).`;
             } else {
                 ping.className = "w-3.5 h-3.5 rounded-full bg-red-500";
-                display.innerHTML = `❌ <span class="text-red-500 font-bold uppercase tracking-wider">Duelo Fallido:</span> Ambos duelistas fallaron. Se penaliza a ambos en el marcador general.`;
+                display.innerHTML = `💥 <span class="text-red-400 font-bold uppercase">Doble Fallo:</span> Ambos equipos respondieron de forma incorrecta y perdieron 1 punto en su marcador.`;
             }
+
+            // Notificar bloqueo definitivo a todos los celulares
+            sendDisableBuzzersSignal();
         }
 
         function blockAllOptions() {
@@ -923,36 +892,39 @@
             options.forEach(opt => {
                 document.getElementById(`opt-${opt}`).disabled = true;
             });
-            blockManualBuzzers();
+            // Desocupar contenedor de manuales
+            document.getElementById("manual-buzzers-container").innerHTML = "";
         }
 
         function updateStateDisplay() {
             const display = document.getElementById('turn-text');
             const ping = document.getElementById('turn-ping');
 
-            if (!isDuelStarted) {
-                ping.className = "w-3.5 h-3.5 rounded-full bg-slate-700 animate-pulse";
-                display.innerHTML = `⏳ <span class="text-slate-500">RONDA PAUSADA:</span> Configura los duelistas arriba y haz clic en "Activar Pulsadores" para jugar...`;
-                return;
-            }
-
             if (!activeBuzzerState) {
-                ping.className = "w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse";
-                display.innerHTML = `⏳ <span class="font-extrabold text-white">DUELO ACTIVO:</span> Esperando zumbido de <span class="text-amber-400 font-black">${teams[activeDuelists.teamA].toUpperCase()}</span> o <span class="text-blue-400 font-black">${teams[activeDuelists.teamB].toUpperCase()}</span>...`;
+                ping.className = "w-3.5 h-3.5 rounded-full bg-slate-700";
+                display.innerText = 'Selecciona los equipos del duelo y haz clic en "Activar Pulsadores"';
+            } else if (currentWinnerOfBuzzer === null) {
+                ping.className = "w-3.5 h-3.5 rounded-full bg-red-500 animate-pulse";
+                display.innerHTML = `🚨 <span class="text-white font-extrabold uppercase">Pulsadores Activos:</span> ${teams[activeDuelists.teamA].toUpperCase()} vs ${teams[activeDuelists.teamB].toUpperCase()}. ¡Presionen ya!`;
             } else {
                 if (currentAttempt === 1) {
                     ping.className = "w-3.5 h-3.5 rounded-full bg-red-500 animate-ping";
-                    display.innerHTML = `⚡ <span class="font-extrabold text-red-400 uppercase tracking-widest">[EQUIPO ${teams[selectedBuzzerTeamKey].toUpperCase()}]</span> ha pulsado primero y tiene el derecho de respuesta.`;
+                    display.innerHTML = `⚡ <span class="font-extrabold text-white">REVISIÓN:</span> Turno de respuesta de <span class="text-red-400 font-bold">${teams[currentWinnerOfBuzzer]}</span>.`;
                 } else {
-                    ping.className = "w-3.5 h-3.5 rounded-full bg-blue-500 animate-ping";
-                    display.innerHTML = `🔵 <span class="font-extrabold text-amber-400 uppercase tracking-widest">¡REBOTE!</span> Oportunidad de robo para <span class="text-white font-black">${teams[selectedBuzzerTeamKey].toUpperCase()}</span> con las opciones restantes.`;
+                    ping.className = "w-3.5 h-3.5 rounded-full bg-amber-500 animate-ping";
+                    display.innerHTML = `🔵 <span class="font-extrabold text-amber-400 uppercase tracking-widest">¡REBOTE ACTIVO!</span> Turno de respuesta de <span class="text-amber-400 font-bold">${teams[currentWinnerOfBuzzer]}</span> con las opciones lógicas restantes.`;
                 }
             }
         }
 
         function updateProgressHeader() {
-            const text = document.getElementById('header-progress-text');
-            text.innerText = `${activeQuestionIndex + 1} / 10`;
+            document.getElementById('header-progress-text').innerText = `${activeQuestionIndex + 1} / 10`;
+        }
+
+        // --- 9. Gestión de Puntajes e Interfaz del Scoreboard ---
+        function adjustManualScore(teamKey, amount) {
+            scores[teamKey] = Math.max(0, scores[teamKey] + amount);
+            document.getElementById(`score-val-${teamKey}`).innerText = scores[teamKey];
         }
 
         function revealJustification() {
@@ -967,8 +939,7 @@
             loadQuestion(activeQuestionIndex);
         }
 
-
-        // --- 9. Funciones del Pulsador Móvil (Buzzer) ---
+        // --- 10. Interfaz del Participante Móvil ---
         function selectTeam(teamKey) {
             playSound('click');
             selectedBuzzerTeamKey = teamKey;
@@ -993,6 +964,9 @@
             document.getElementById("buzzer-setup").classList.add("hidden");
             document.getElementById("buzzer-active").classList.remove("hidden");
             document.getElementById("buzzer-team-tag").innerText = `EQUIPO: ${teams[selectedBuzzerTeamKey].toUpperCase()}`;
+            
+            // Forzar estado bloqueado por defecto al conectar
+            disableMobileBuzzer();
         }
 
         function triggerMobileBuzz() {
@@ -1012,7 +986,7 @@
                 // Deshabilitar temporalmente el botón del participante para evitar pulsados repetitivos
                 const giantBtn = document.getElementById("giant-buzzer-button");
                 giantBtn.disabled = true;
-                giantBtn.className = "w-56 h-56 rounded-full bg-slate-200 border-8 border-slate-300 text-slate-400 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
+                giantBtn.className = "w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
                 document.getElementById("buzzer-screen-status").innerText = "¡PULSACIÓN ENVIADA! Verifiquen la pantalla del salón...";
             }).catch(e => {
                 document.getElementById("buzzer-screen-status").innerText = "Fallo de conexión. Intenten presionar nuevamente.";
@@ -1020,16 +994,173 @@
         }
 
         function resetMobileBuzzerState() {
-            // Habilitar de nuevo el botón rojo gigante del participante para la nueva pregunta
+            disableMobileBuzzer();
+        }
+
+        function disableMobileBuzzer() {
             const giantBtn = document.getElementById("giant-buzzer-button");
-            if (giantBtn) {
-                giantBtn.disabled = false;
-                giantBtn.className = "w-56 h-56 rounded-full bg-gradient-to-b from-red-500 to-red-600 border-8 border-slate-100 shadow-2xl active:scale-95 transition-transform duration-75 flex items-center justify-center text-white text-3xl font-black uppercase cursor-pointer relative z-10 select-none";
-            }
             const statusText = document.getElementById("buzzer-screen-status");
-            if (statusText) {
-                statusText.innerText = "Sincronizado. ¡Listos para la siguiente pregunta!";
+            if (giantBtn) {
+                giantBtn.disabled = true;
+                giantBtn.className = "w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
             }
+            if (statusText) {
+                statusText.innerText = "Esperando que el docente habilite los pulsadores...";
+                statusText.className = "text-xs text-slate-400 mt-2 font-semibold";
+            }
+        }
+
+        function enableMobileBuzzerForDuel(teamA, teamB) {
+            if (!selectedBuzzerTeamKey) return;
+            const giantBtn = document.getElementById("giant-buzzer-button");
+            const statusText = document.getElementById("buzzer-screen-status");
+
+            if (selectedBuzzerTeamKey === teamA || selectedBuzzerTeamKey === teamB) {
+                if (giantBtn) {
+                    giantBtn.disabled = false;
+                    giantBtn.className = "w-56 h-56 rounded-full bg-gradient-to-b from-red-500 to-red-600 border-8 border-slate-100 shadow-2xl active:scale-95 transition-transform duration-75 flex items-center justify-center text-white text-3xl font-black uppercase cursor-pointer relative z-10 select-none";
+                }
+                if (statusText) {
+                    statusText.innerText = "¡PULSADORES ACTIVOS! Presiona el botón rojo ya";
+                    statusText.className = "text-xs text-emerald-600 mt-2 font-black animate-pulse";
+                }
+                playSound('correct'); // Sonido sutil para alertar que ya pueden pulsar
+            } else {
+                if (giantBtn) {
+                    giantBtn.disabled = true;
+                    giantBtn.className = "w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
+                }
+                if (statusText) {
+                    statusText.innerText = "Tu equipo no participa en este duelo.";
+                    statusText.className = "text-xs text-slate-400 mt-2 font-semibold";
+                }
+            }
+        }
+
+        function disableMobileBuzzerOnBuzz(winnerTeamKey) {
+            const giantBtn = document.getElementById("giant-buzzer-button");
+            const statusText = document.getElementById("buzzer-screen-status");
+            if (giantBtn) {
+                giantBtn.disabled = true;
+                giantBtn.className = "w-56 h-56 rounded-full bg-slate-100 border-8 border-slate-200 text-slate-300 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
+            }
+            if (statusText) {
+                if (selectedBuzzerTeamKey === winnerTeamKey) {
+                    statusText.innerText = "¡Ganaste el pulsador! Responde en la pantalla del salón.";
+                    statusText.className = "text-xs text-emerald-600 mt-2 font-black";
+                } else {
+                    statusText.innerText = `¡Pulsó primero el equipo ${teams[winnerTeamKey].toUpperCase()}!`;
+                    statusText.className = "text-xs text-red-500 mt-2 font-bold";
+                }
+            }
+        }
+
+        // --- 11. Sincronización Remota de Mensajería ---
+        function sendSignal(bodyObject) {
+            const topic = `duelo_complejidad_${gamePin}`;
+            fetch(`https://ntfy.sh/${topic}`, {
+                method: 'POST',
+                body: JSON.stringify(bodyObject)
+            }).catch(e => console.log("Fallo de envío de señal remota"));
+        }
+
+        function sendDisableBuzzersSignal() {
+            sendSignal({ event: "disable_buzzers" });
+        }
+
+        // --- 12. Cierre de Partida y Visualización de Podio ---
+        function finishAndShowPodium() {
+            playSound('correct');
+            
+            // Ocultar juego y mostrar podio
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('header-progress').classList.add('hidden');
+            document.getElementById('podium-screen').classList.remove('hidden');
+
+            // Desconectar SSE en el proyector
+            if (eventSourceConnection) eventSourceConnection.close();
+
+            // Ordenar los equipos de mayor a menor puntaje
+            const sortedTeams = Object.keys(scores).map(key => {
+                return { key: key, name: teams[key], score: scores[key] };
+            }).sort((a, b) => b.score - a.score);
+
+            // Renderizar el podio final
+            const container = document.getElementById('podium-container');
+            container.innerHTML = "";
+
+            sortedTeams.forEach((item, index) => {
+                let badgeColor = "bg-slate-950 text-slate-400 border-slate-800";
+                let medal = "🏅";
+
+                if (index === 0) {
+                    badgeColor = "bg-amber-500/10 text-amber-400 border-amber-500/30";
+                    medal = "🥇";
+                } else if (index === 1) {
+                    badgeColor = "bg-slate-300/10 text-slate-300 border-slate-300/30";
+                    medal = "🥈";
+                } else if (index === 2) {
+                    badgeColor = "bg-amber-700/10 text-amber-600 border-amber-700/30";
+                    medal = "🥉";
+                }
+
+                container.innerHTML += `
+                    <div class="flex items-center justify-between p-4 rounded-xl border border-slate-850 bg-slate-950/60 ${badgeColor}">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">${medal}</span>
+                            <div class="text-left">
+                                <span class="text-[10px] font-black uppercase tracking-wider block opacity-70">Puesto #${index + 1}</span>
+                                <span class="text-sm font-black text-white">${item.name}</span>
+                            </div>
+                        </div>
+                        <div class="text-right">
+                            <span class="text-lg font-black tech-font text-slate-100">${item.score} Puntos</span>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function backToSetup() {
+            playSound('click');
+            
+            // Restablecer valores de fábrica de marcadores
+            Object.keys(scores).forEach(key => scores[key] = 5);
+            document.getElementById('score-val-t1').innerText = "5";
+            document.getElementById('score-val-t2').innerText = "5";
+            document.getElementById('score-val-t3').innerText = "5";
+            document.getElementById('score-val-t4').innerText = "5";
+
+            // Transición a pantalla de configuración
+            document.getElementById('podium-screen').classList.add('hidden');
+            document.getElementById('setup-screen').classList.remove('hidden');
+
+            // Nuevo PIN para no chocar con la partida anterior
+            gamePin = Math.floor(1000 + Math.random() * 9000).toString();
+        }
+
+        function restartSameGame() {
+            playSound('click');
+            
+            // Reestablecer marcadores a 5 puntos
+            Object.keys(scores).forEach(key => scores[key] = 5);
+            document.getElementById('score-val-t1').innerText = "5";
+            document.getElementById('score-val-t2').innerText = "5";
+            document.getElementById('score-val-t3').innerText = "5";
+            document.getElementById('score-val-t4').innerText = "5";
+
+            // Volver a la pantalla del juego principal directamente
+            document.getElementById('podium-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('header-progress').classList.remove('hidden');
+
+            // Volver a barajar y empezar
+            currentQuestionList = shuffle([...rawPremises]);
+            activeQuestionIndex = 0;
+            loadQuestion(0);
+
+            // Re-abrir canal en el proyector
+            initializeBoardSyncChannel();
         }
     </script>
 </body>
