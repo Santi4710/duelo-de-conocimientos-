@@ -430,6 +430,7 @@
         </div>
     </footer>
 
+    <!-- SCRIPT DE COMPORTAMIENTO PRINCIPAL -->
     <script>
         // --- 1. Base de Datos de Preguntas y Desglose Epistemológico ---
         const rawPremises = [
@@ -499,7 +500,7 @@
             {
                 id: 8,
                 concept: "Concepto: Migración de Conceptos y Metáforas",
-                p1: "La ciencia progresaría mucho más rápido y mejor si se prohibiera estrictamente la migración clandestina de conceptos entre diferentes disciplinas.",
+                p1: "La ciencia progresaría mucho más rápido y mejor si se prohibiera strictly la migración clandestina de conceptos entre diferentes disciplinas.",
                 p2: "Las metáforas son perjudiciales para la epistemología compleja porque siempre generan malentendidos y carecen de un valor científico real.",
                 correct: "F-F",
                 exp1: "La transdisciplinariedad y la migración de conceptos oxigenan las disciplinas, mientras que la prohibición estricta de préstamos asfixiaría el avance científico.",
@@ -558,7 +559,72 @@
         };
         let currentWinnerOfBuzzer = null; // t1, t2, etc.
 
-        // --- 3. Cargador Inicial y Parsing de Parámetros ---
+        // --- 3. Generador de Efectos de Sonido (Web Audio API) ---
+        let audioCtx = null;
+        function playSound(type) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'buzz') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'incorrect') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(130.81, audioCtx.currentTime);
+                    osc.frequency.setValueAtTime(110.00, audioCtx.currentTime + 0.15);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                }
+            } catch (e) {
+                console.log("Audio Context no soportado aún.");
+            }
+        }
+
+        // --- 4. Mezclador No-Repetitivo (Fisher-Yates) ---
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- 5. Cargador Inicial y Parsing de Parámetros ---
         window.onload = function() {
             const urlParams = new URLSearchParams(window.location.search);
             const role = urlParams.get('role');
@@ -597,7 +663,7 @@
             }
         };
 
-        // --- 4. Inicialización de la Partida (Docente) ---
+        // --- 6. Inicialización de la Partida (Docente) ---
         function confirmAndGenerateSession() {
             playSound('click');
             
@@ -659,7 +725,7 @@
             `;
         }
 
-        // --- 5. Flujos en Tiempo Real de ntfy.sh (Server-Sent Events) ---
+        // --- 7. Flujos en Tiempo Real de ntfy.sh (Server-Sent Events) ---
         function initializeBoardSyncChannel() {
             const topic = `duelo_complejidad_${gamePin}`;
             if (eventSourceConnection) eventSourceConnection.close();
@@ -732,7 +798,7 @@
             });
         }
 
-        // --- 6. Inicialización de Preguntas y Lógica de Selección ---
+        // --- 8. Inicialización de Preguntas y Lógica de Selección ---
         function loadQuestion(index) {
             if (index >= currentQuestionList.length) {
                 finishAndShowPodium();
@@ -931,12 +997,6 @@
             playSound('click');
             const panel = document.getElementById('justification-panel');
             panel.classList.toggle('hidden');
-        }
-
-        function loadNextQuestion() {
-            playSound('click');
-            activeQuestionIndex++;
-            loadQuestion(activeQuestionIndex);
         }
 
         // --- 10. Interfaz del Participante Móvil ---
@@ -1161,6 +1221,12 @@
 
             // Re-abrir canal en el proyector
             initializeBoardSyncChannel();
+        }
+
+        function loadNextQuestion() {
+            playSound('click');
+            activeQuestionIndex++;
+            loadQuestion(activeQuestionIndex);
         }
     </script>
 </body>
