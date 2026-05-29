@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duelo del Botón Rojo - Pensamiento Complejo</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #060913;
+        }
+        .tech-font {
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .correct-glow {
+            animation: correct-glow-animation 1.5s ease-out infinite alternate;
+        }
+        @keyframes correct-glow-animation {
+            0% { box-shadow: 0 0 5px rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.4); }
+            100% { box-shadow: 0 0 25px rgba(16, 185, 129, 0.6); border-color: rgba(16, 185, 129, 1); }
+        }
+        .shake {
+            animation: shake-animation 0.5s ease-in-out;
+        }
+        @keyframes shake-animation {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+        .pulsar-active {
+            animation: pulse-red 2s infinite;
+        }
+        @keyframes pulse-red {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(239, 68, 68, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+    </style>
+</head>
+<body class="text-slate-100 min-h-screen flex flex-col justify-between overflow-x-hidden">
+
+    <!-- ========================================== -->
+    <!-- MODO CONTROLADOR PRINCIPAL (DOCENTE/BOARD) -->
+    <!-- ========================================== -->
+    <div id="board-layout" class="hidden flex flex-col min-h-screen justify-between">
+        <header class="border-b border-slate-900 bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 px-6 py-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <div class="flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-red-600 flex items-center justify-center text-white text-base shadow-lg shadow-red-950">
+                        🔴
+                    </div>
+                    <div>
+                        <h1 class="text-lg font-extrabold tracking-tight text-white uppercase flex items-center gap-2">
+                            El Duelo del Botón Rojo
+                            <span class="text-[10px] bg-red-500/20 text-red-400 px-2 py-0.5 rounded border border-red-500/30 tech-font">MÉTODO MORIN</span>
+                        </h1>
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <div class="text-xs font-bold text-slate-400 uppercase tracking-widest tech-font bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                        PIN Sincronización: <span id="board-pin-display" class="text-amber-400 text-sm font-black ml-1">----</span>
+                    </div>
+                    <div id="header-progress" class="hidden text-xs font-bold text-slate-400 uppercase tracking-widest tech-font bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800">
+                        Progreso: <span id="header-progress-text" class="text-red-400">0 / 10</span>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- CONTENEDOR PRINCIPAL -->
+        <main class="max-w-5xl mx-auto p-4 md:p-8 flex-grow w-full flex items-center justify-center">
+            
+            <!-- PANTALLA INICIAL (BIENVENIDA Y QR) -->
+            <section id="welcome-screen" class="w-full max-w-3xl bg-gradient-to-b from-slate-900 to-slate-950 border border-slate-800/80 rounded-3xl p-8 md:p-12 text-center shadow-2xl relative overflow-hidden">
+                <div class="absolute -right-24 -top-24 w-72 h-72 bg-red-600/10 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -left-24 -bottom-24 w-72 h-72 bg-blue-600/5 rounded-full blur-3xl pointer-events-none"></div>
+                
+                <span class="text-xs font-bold tracking-widest text-red-500 uppercase bg-red-500/10 px-4 py-1.5 rounded-full border border-red-500/20 tech-font">
+                    Dinámica Epistemológica Activa
+                </span>
+                
+                <h2 class="text-4xl md:text-5xl font-black text-white mt-6 mb-4 tracking-tight leading-tight">
+                    ¿Están listos para el <span class="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-amber-400">Duelo de la Complejidad</span>?
+                </h2>
+                
+                <p class="text-slate-400 text-sm md:text-base max-w-xl mx-auto mb-6 leading-relaxed">
+                    Sincronicen los pulsadores móviles escaneando el código QR que se muestra a continuación o ingresando en la dirección del juego con el PIN asignado.
+                </p>
+
+                <!-- BLOQUE DE SINCRONIZACIÓN QR Y PIN -->
+                <div class="flex flex-col md:flex-row items-center justify-center gap-8 bg-slate-950/80 p-6 rounded-2xl border border-slate-800/80 max-w-2xl mx-auto mb-8">
+                    <div class="bg-white p-3 rounded-xl shadow-inner flex items-center justify-center">
+                        <img id="welcome-qr-image" class="w-40 h-40" src="https://placehold.co/150x150/0f172a/ffffff?text=Cargando+QR" alt="Código QR de Sincronización">
+                    </div>
+                    <div class="text-left flex-1">
+                        <h4 class="text-xs font-extrabold text-slate-500 uppercase tracking-widest tech-font mb-1">CONEXIÓN DE PULSADORES MÓVILES</h4>
+                        <p class="text-xs text-slate-400 mb-3 leading-normal">
+                            Escaneen con la cámara de sus celulares para abrir el pulsador. Cada equipo debe elegir su palo de la baraja española para el duelo.
+                        </p>
+                        <div class="text-sm font-semibold text-slate-300">
+                            PIN de Acceso: <span id="welcome-pin-display" class="text-amber-400 font-extrabold text-lg ml-1 bg-slate-900 px-2 py-1 rounded border border-slate-800 tracking-widest">----</span>
+                        </div>
+                        <div class="text-[10px] text-emerald-400 flex items-center gap-1.5 mt-3">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                            <span>Canal de sincronización seguro y activo</span>
+                        </div>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="group relative px-10 py-5 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white font-extrabold text-xl rounded-2xl shadow-xl shadow-red-950/50 transition-all duration-150 transform hover:-translate-y-1 active:translate-y-0 cursor-pointer">
+                    Comienzo de la Actividad 🚀
+                </button>
+            </section>
+
+            <!-- PANTALLA DE JUEGO PRINCIPAL -->
+            <section id="game-screen" class="hidden w-full flex flex-col gap-6">
+                
+                <!-- INDICADOR DE TURNO Y ACCIÓN DEL JUEGO -->
+                <div id="turn-banner" class="w-full bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col sm:flex-row justify-between items-center gap-4 shadow-lg">
+                    <div class="flex items-center gap-3">
+                        <span id="turn-ping" class="w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse"></span>
+                        <span id="turn-text" class="text-sm md:text-base font-bold text-slate-300">
+                            Esperando que un participante presione su botón móvil...
+                        </span>
+                    </div>
+                    <!-- Botón manual de emergencia por si falla la red -->
+                    <button id="btn-physical-buzz" onclick="registerManualBuzzer()" class="w-full sm:w-auto px-5 py-2.5 bg-slate-950 hover:bg-slate-800 border border-slate-700 rounded-xl text-xs font-bold text-slate-300 hover:text-white transition flex items-center justify-center gap-2 cursor-pointer uppercase tracking-wider">
+                        ⚡ Pulsación Manual (Docente)
+                    </button>
+                </div>
+
+                <!-- TARJETA DE PREGUNTA ACTIVA CON TEXTO GIGANTE -->
+                <div id="main-card" class="bg-gradient-to-br from-slate-900 to-slate-950 border border-slate-800 rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-300">
+                    <div class="absolute -right-12 -top-12 w-48 h-48 bg-red-600/5 rounded-full blur-3xl pointer-events-none"></div>
+                    
+                    <!-- ID y Concepto -->
+                    <div class="flex items-center justify-between border-b border-slate-800/80 pb-4 mb-6">
+                        <span id="concept-number" class="text-xs font-black text-red-500 uppercase tracking-widest tech-font">PREGUNTA #1 DE 10</span>
+                        <span class="text-xs font-bold text-slate-500 uppercase tracking-widest">Edgar Morin</span>
+                    </div>
+
+                    <!-- Título del Concepto -->
+                    <h2 id="concept-title" class="text-2xl md:text-3xl lg:text-4xl font-extrabold text-white leading-tight tracking-tight mb-8">
+                        Concepto: Complejidad y Simplicidad
+                    </h2>
+
+                    <!-- Bloques de Premisas (Legibilidad Máxima) -->
+                    <div class="flex flex-col gap-6">
+                        <!-- Premisa 1 -->
+                        <div class="bg-slate-950/60 border border-slate-850 rounded-2xl p-6 md:p-8 hover:border-slate-800 transition relative">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-red-950/80 text-[11px] text-red-400 font-extrabold uppercase border border-red-900/30 rounded-full tracking-widest tech-font">
+                                Premisa 1
+                            </div>
+                            <p id="premise-1-text" class="text-lg md:text-xl lg:text-2xl leading-relaxed text-slate-100 pt-1 font-medium">
+                                Carga de premisa...
+                            </p>
+                        </div>
+
+                        <!-- Premisa 2 -->
+                        <div class="bg-slate-950/60 border border-slate-850 rounded-2xl p-6 md:p-8 hover:border-slate-800 transition relative">
+                            <div class="absolute -top-3 left-6 px-3 py-1 bg-blue-950/80 text-[11px] text-blue-400 font-extrabold uppercase border border-blue-900/30 rounded-full tracking-widest tech-font">
+                                Premisa 2
+                            </div>
+                            <p id="premise-2-text" class="text-lg md:text-xl lg:text-2xl leading-relaxed text-slate-100 pt-1 font-medium">
+                                Carga de premisa...
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- GRILLA DE OPCIONES LÓGICAS (TAMAÑO MAXI) -->
+                <div class="flex flex-col gap-3">
+                    <h3 class="text-xs font-extrabold uppercase text-slate-500 tracking-widest">
+                        Seleccione la Combinación lógica para resolver el duelo:
+                    </h3>
+                    
+                    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                        <!-- Opción V - V -->
+                        <button id="opt-V-V" onclick="chooseOption('V-V')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">V - V</span>
+                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Verdadera - Verdadera</span>
+                        </button>
+
+                        <!-- Opción V - F -->
+                        <button id="opt-V-F" onclick="chooseOption('V-F')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">V - F</span>
+                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Verdadera - Falsa</span>
+                        </button>
+
+                        <!-- Opción F - V -->
+                        <button id="opt-F-V" onclick="chooseOption('F-V')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">F - V</span>
+                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Falsa - Verdadera</span>
+                        </button>
+
+                        <!-- Opción F - F -->
+                        <button id="opt-F-F" onclick="chooseOption('F-F')" disabled class="group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95">
+                            <span class="text-3xl font-black group-hover:scale-105 transition duration-150">F - F</span>
+                            <span class="text-[10px] text-slate-400 tracking-widest font-bold uppercase tech-font">Falsa - Falsa</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- CONTROLES DE FLUJO -->
+                <div class="flex flex-col sm:flex-row gap-4 w-full mt-2">
+                    <button id="btn-reveal" onclick="revealJustification()" disabled class="flex-grow py-5 px-6 rounded-2xl font-bold transition flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-700 disabled:opacity-50 disabled:pointer-events-none text-slate-100 shadow-md cursor-pointer">
+                        💡 Revelar Explicación Teórica Desglosada
+                    </button>
+                    <button id="btn-next" onclick="loadNextQuestion()" class="py-5 px-10 rounded-2xl font-black transition flex items-center justify-center gap-2 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-500 hover:to-red-600 text-white shadow-lg shadow-red-950/20 cursor-pointer">
+                        Siguiente Pregunta ➡️
+                    </button>
+                </div>
+
+                <!-- PANEL DE EXPLICACIÓN (DESGLOSADO POR PREMISAS) -->
+                <div id="justification-panel" class="hidden flex flex-col gap-4 bg-slate-950 border-2 border-amber-500/20 rounded-2xl p-6 md:p-8 transition-all duration-300">
+                    <div class="flex items-center gap-2 text-amber-400 font-extrabold text-sm uppercase tracking-wider tech-font">
+                        ✨ Fundamentación Epistemológica de Edgar Morin:
+                    </div>
+                    
+                    <!-- Desglose Premisa 1 -->
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        <span id="explanation-badge-1" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-red-500/20 text-red-400">Análisis Premisa 1</span>
+                        <p id="justification-p1" class="mt-2 text-slate-300 text-sm md:text-base leading-relaxed italic">Cargando...</p>
+                    </div>
+
+                    <!-- Desglose Premisa 2 -->
+                    <div class="bg-slate-900/50 p-4 rounded-xl border border-slate-800">
+                        <span id="explanation-badge-2" class="text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider bg-blue-500/20 text-blue-400">Análisis Premisa 2</span>
+                        <p id="justification-p2" class="mt-2 text-slate-300 text-sm md:text-base leading-relaxed italic">Cargando...</p>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+
+        <!-- PIE DE PÁGINA -->
+        <footer class="border-t border-slate-950 bg-slate-950/90 py-5 px-6 text-center text-xs text-slate-500 mt-12">
+            <div class="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-4">
+                <div>
+                    Consola Educativa "El Duelo de la Complejidad" — Basado en <span class="italic text-slate-400">Edgar Morin</span>.
+                </div>
+                <div class="flex gap-4">
+                    <button onclick="backToMenu()" class="text-slate-400 hover:text-white transition underline font-semibold cursor-pointer">Volver al Menú Inicial</button>
+                    <button onclick="restartGame()" class="text-slate-400 hover:text-white transition underline font-semibold cursor-pointer">Barajar de Nuevo</button>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- MODO PULSADOR MÓVIL (PARTICIPANTE)         -->
+    <!-- ========================================== -->
+    <div id="buzzer-layout" class="hidden min-h-screen bg-white text-slate-900 flex flex-col justify-between p-6">
+        <!-- CABECERA MÓVIL -->
+        <header class="flex flex-col items-center border-b border-slate-100 pb-4">
+            <h1 class="text-sm font-extrabold tracking-tight text-slate-800 uppercase flex items-center gap-1">
+                🔴 Duelo del Botón Rojo
+            </h1>
+            <p class="text-[10px] text-slate-400 font-bold tracking-widest uppercase tech-font">Pulsador Móvil Oficial</p>
+        </header>
+
+        <!-- CONFIGURACIÓN DEL EQUIPO ANTES DE ACTIVAR -->
+        <div id="buzzer-setup" class="flex-grow flex flex-col justify-center max-w-sm mx-auto w-full gap-6">
+            <div class="text-center">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest mb-1">Paso 1 de 2</p>
+                <h3 class="text-lg font-bold text-slate-800">Configuración del Pulsador</h3>
+            </div>
+
+            <!-- PIN INYECTADO -->
+            <div class="flex flex-col gap-1">
+                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">PIN del Tablero</label>
+                <input id="buzzer-pin-input" type="number" readonly class="bg-slate-50 border border-slate-200 text-slate-700 text-center text-lg font-bold tracking-widest rounded-xl p-3 focus:outline-none" placeholder="0000">
+            </div>
+
+            <!-- SELECCIONAR EQUIPO (PALO) -->
+            <div class="flex flex-col gap-1.5">
+                <label class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Palo de su Equipo (Baraja Española)</label>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="selectTeam('Oros')" id="team-Oros" class="p-3 border border-slate-200 hover:border-slate-400 rounded-xl flex items-center justify-center gap-2 font-bold transition text-xs">
+                        🟡 Oros
+                    </button>
+                    <button onclick="selectTeam('Copas')" id="team-Copas" class="p-3 border border-slate-200 hover:border-slate-400 rounded-xl flex items-center justify-center gap-2 font-bold transition text-xs">
+                        🏆 Copas
+                    </button>
+                    <button onclick="selectTeam('Espadas')" id="team-Espadas" class="p-3 border border-slate-200 hover:border-slate-400 rounded-xl flex items-center justify-center gap-2 font-bold transition text-xs">
+                        ⚔️ Espadas
+                    </button>
+                    <button onclick="selectTeam('Bastos')" id="team-Bastos" class="p-3 border border-slate-200 hover:border-slate-400 rounded-xl flex items-center justify-center gap-2 font-bold transition text-xs">
+                        🪵 Bastos
+                    </button>
+                </div>
+            </div>
+
+            <!-- BOTÓN CONFIRMAR CONEXIÓN -->
+            <button onclick="confirmBuzzerConnection()" class="w-full py-4 bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-sm rounded-2xl transition shadow-lg tracking-wider uppercase cursor-pointer">
+                Confirmar y Activar Pulsador ⚡
+            </button>
+        </div>
+
+        <!-- PANTALLA DEL BOTÓN ROJO GIGANTE (ACTIVO) -->
+        <div id="buzzer-active" class="hidden flex-grow flex flex-col items-center justify-center gap-6">
+            <div class="text-center">
+                <span id="buzzer-team-tag" class="text-xs font-black uppercase bg-slate-100 text-slate-800 px-3 py-1 rounded-full border border-slate-200 tracking-wider">EQUIPO</span>
+                <p id="buzzer-screen-status" class="text-xs text-slate-400 mt-2 font-semibold">Esperando el inicio de la pregunta en la pantalla...</p>
+            </div>
+
+            <!-- BOTÓN ROJO GIGANTE -->
+            <div class="relative w-64 h-64 flex items-center justify-center">
+                <button id="giant-buzzer-button" onclick="triggerMobileBuzz()" class="w-56 h-56 rounded-full bg-gradient-to-b from-red-500 to-red-700 border-8 border-slate-100 shadow-2xl active:scale-95 transition-transform duration-75 flex items-center justify-center text-white text-3xl font-black uppercase cursor-pointer relative z-10 select-none">
+                    PULSAR
+                </button>
+                <div class="absolute inset-0 bg-red-100 rounded-full animate-ping opacity-25"></div>
+            </div>
+
+            <div class="text-[10px] text-slate-400 flex items-center gap-1.5 uppercase tracking-widest font-bold">
+                <span id="buzzer-online-dot" class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                <span>Canal de sincronización sincronizado</span>
+            </div>
+        </div>
+
+        <!-- PIE DE PÁGINA MÓVIL -->
+        <footer class="text-center text-[10px] text-slate-400 border-t border-slate-100 pt-3">
+            El Duelo de la Complejidad. No cierren esta ventana.
+        </footer>
+    </div>
+
+
+    <script>
+        // --- 1. Base de Datos Epistemológica (Las 10 premisas con explicaciones desglosadas) ---
+        const rawPremises = [
+            {
+                id: 1,
+                concept: "Concepto: Complejidad y Simplicidad",
+                p1: "El pensamiento complejo rechaza integrar el orden y busca eliminar por completo cualquier tipo de pensamiento simplificador.",
+                p2: "La complejidad no es una palabra que aporte soluciones inmediatas, sino que se presenta como un desafío y una palabra problema.",
+                correct: "F-V",
+                p1Explanation: "La premisa 1 es FALSA. El pensamiento complejo no elimina la simplicidad; por el contrario, integra activamente los principios de orden y claridad, rechazando únicamente sus consecuencias reduccionistas y cegadoras.",
+                p2Explanation: "La premisa 2 es VERDADERA. Edgar Morin define explícitamente la complejidad como un desafío conceptual, una 'palabra problema', y no como una receta mágica o de resolución inmediata."
+            },
+            {
+                id: 2,
+                concept: "Concepto: El Conocimiento y la Totalidad",
+                p1: "Uno de los axiomas centrales de la complejidad es la imposibilidad teórica de alcanzar una omnisciencia o un conocimiento completo.",
+                p2: "La totalidad es la máxima verdad a la que debe aspirar ciegamente cualquier sistema de pensamiento científico moderno.",
+                correct: "V-F",
+                p1Explanation: "La premisa 1 es VERDADERA. La imposibilidad de la omnisciencia y la incompletitud inherente a todo saber son bases fundamentales de esta epistemología.",
+                p2Explanation: "La premisa 2 es FALSA. Apoyándose en Theodor Adorno, el autor sostiene de manera tajante que 'la totalidad es la no verdad', rechazando la ambición totalitaria de los dogmas cerrados."
+            },
+            {
+                id: 3,
+                concept: "Concepto: El Avance de la Ciencia y el Reduccionismo",
+                p1: "La ciencia avanza basándose exclusivamente en el consenso unánime de los investigadores, evitando todo conflicto o rivalidad teórica.",
+                p2: "Cada victoria del reduccionismo en la ciencia se paga inevitablemente con la introducción de una nueva complejización histórica o conceptual.",
+                correct: "F-V",
+                p1Explanation: "La premisa 1 es FALSA. La ciencia es una actividad humana compleja que avanza en medio del conflicto, la tensión y la rivalidad de teorías, y no por consensos estáticos o unánimes.",
+                p2Explanation: "La premisa 2 es VERDADERA. Intentar reducir los fenómenos de un nivel (ej. explicar la biología solo mediante la física) obliga siempre a introducir nuevas variables organizativas que complejizan el modelo."
+            },
+            {
+                id: 4,
+                concept: "Concepto: Información vs. Conocimiento",
+                p1: "La información existe de forma independiente en el universo físico desde siempre, mucho antes de la aparición de la vida organizada.",
+                p2: "El conocimiento es puramente acumulativo y no requiere ninguna separación de fronteras entre el sujeto conocedor y el mundo exterior.",
+                correct: "F-F",
+                p1Explanation: "La premisa 1 es FALSA. La información no es una entidad física pura flotando en el cosmos; requiere de la computación o interpretación de un ser viviente para constituirse como tal.",
+                p2Explanation: "La premisa 2 es FALSA. El conocimiento no se reduce a acumular datos; demanda de hecho una paradoja de apertura y clausura, así como una clara separación de fronteras con el mundo exterior."
+            },
+            {
+                id: 5,
+                concept: "Concepto: Paradigmas e Ideologías",
+                p1: "Un paradigma funciona como un controlador absoluto de la lógica del discurso y determina las relaciones entre las categorías maestras.",
+                p2: "Las ideologías son vistas como sistemas de ideas en su grado cero, siendo este un término totalmente neutro que no denuncia falsedades.",
+                correct: "V-V",
+                p1Explanation: "La premisa 1 es VERDADERA. El paradigma ejerce un control semántico y lógico riguroso, definiendo qué relaciones conceptuales son válidas y cuáles no.",
+                p2Explanation: "La premisa 2 es VERDADERA. Desde esta perspectiva, la ideología se define de manera neutral en su 'grado cero' simplemente como un sistema organizado de ideas, sin la carga peyorativa clásica de falsedad."
+            },
+            {
+                id: 6,
+                concept: "Concepto: Razón y Racionalización",
+                p1: "La verdadera racionalidad es de carácter evolutivo, reconoce sus propios límites y es capaz de mantener un diálogo con lo irracional.",
+                p2: "La racionalización es el estado perfecto de la razón porque garantiza una coherencia lógica absoluta e inmune a las fallas empíricas.",
+                correct: "V-F",
+                p1Explanation: "La premisa 1 es VERDADERA. La racionalidad genuina es abierta, autocrítica y acepta la existencia de misterios o límites del conocimiento sin negar la lógica.",
+                p2Explanation: "La premisa 2 es FALSA. La racionalización es la patología o enemiga de la razón; constituye un 'delirio lógico' cerrado que ignora la realidad empírica para mantener intacta su coherencia interna."
+            },
+            {
+                id: 7,
+                concept: "Concepto: El Orden y el Desorden",
+                p1: "El nuevo enfoque de la complejidad establece que el desorden es el único principio originario que anula cualquier forma de orden estructural.",
+                p2: "El orden, el desorden y la organización son principios complementarios e interdependientes que deben combinarse para explicar los fenómenos.",
+                correct: "F-V",
+                p1Explanation: "La premisa 1 es FALSA. Morin rechaza otorgar al desorden el papel de principio único u originario, desmarcándose de las posturas nihilistas que solo valoran el ruido o el caos.",
+                p2Explanation: "La premisa 2 es VERDADERA. El orden, el desorden y la organización forman un bucle recursivo y complementario (el tetragrama), indispensables de forma conjunta para comprender la realidad."
+            },
+            {
+                id: 8,
+                concept: "Concepto: Migración de Conceptos y Metáforas",
+                p1: "La ciencia progresaría mucho más rápido y mejor si se prohibiera estrictamente la migración clandestina de conceptos entre diferentes disciplinas.",
+                p2: "Las metáforas son perjudiciales para la epistemología compleja porque siempre generan malentendidos y carecen de un valor científico real.",
+                correct: "F-F",
+                p1Explanation: "La premisa 1 es FALSA. La transdisciplinariedad y la migración clandestina de conceptos oxigenan las disciplinas, mientras que la prohibición estricta de préstamos asfixiaría el avance científico.",
+                p2Explanation: "La premisa 2 es FALSA. Lejos de ser nocivas, las metáforas (como transferir la noción de 'información' o 'trabajo' de un área a otra) han sido motores creativos cruciales para los descubrimientos científicos."
+            },
+            {
+                id: 9,
+                concept: "Concepto: Evolución del Espíritu Humano",
+                p1: "La humanidad se encuentra actualmente en la culminación de su historia intelectual, habiendo superado definitivamente la barbarie ideológica.",
+                p2: "En la actualidad habitamos una 'edad de hierro planetaria' y nos encontramos todavía en la etapa de prehistoria del verdadero espíritu humano.",
+                correct: "F-V",
+                p1Explanation: "La premisa 1 es FALSA. Nuestras teorías aún no logran convivir de manera pacífica y seguimos inmersos en dogmatismos destructivos.",
+                p2Explanation: "La premisa 2 es VERDADERA. Para Morin, transitamos una 'edad de hierro planetaria' caracterizada por la barbarie conceptual; el desarrollo pleno del espíritu humano es un horizonte todavía por conquistar."
+            },
+            {
+                id: 10,
+                concept: "Concepto: La Objetividad y el Sujeto",
+                p1: "En el pensamiento complejo contemporáneo, el sujeto cognoscente debe ser reintegrado plenamente en su propia observación para no mutilar lo real.",
+                p2: "La objetividad científica es en realidad un resultado en el que el ser humano coopera activamente y actúa como coproductor junto al mundo exterior.",
+                correct: "V-V",
+                p1Explanation: "La premisa 1 es VERDADERA. Reintroducir al sujeto en la descripción del objeto es un principio metodológico fundamental para lograr un conocimiento honesto y no mutilado.",
+                p2Explanation: "La premisa 2 es VERDADERA. La objetividad no es un reflejo pasivo del exterior, sino un constructo en el que el sujeto interviene activamente, coproduciendo el saber en interacción con el mundo."
+            }
+        ];
+
+        // --- 2. Estado Global de Sincronización y Configuración de Roles ---
+        let role = "board"; // "board" (servidor en proyector) o "buzzer" (móvil)
+        let gamePin = "0000";
+        let activeBuzzerState = false;
+        let currentAttempt = 1;
+        let disabledOptions = new Set();
+        let isQuestionResolved = false;
+        let currentQuestionList = [];
+        let activeQuestionIndex = 0;
+        let selectedBuzzerTeam = "";
+        let eventSourceConnection = null;
+
+        // --- 3. Generador de Efectos de Sonido (Web Audio API) ---
+        let audioCtx = null;
+        function playSound(type) {
+            try {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                if (audioCtx.state === 'suspended') {
+                    audioCtx.resume();
+                }
+
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+
+                if (type === 'buzz') {
+                    osc.type = 'sawtooth';
+                    osc.frequency.setValueAtTime(220, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(120, audioCtx.currentTime + 0.3);
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.3);
+                } else if (type === 'correct') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(523.25, audioCtx.currentTime); // C5
+                    osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1); // E5
+                    osc.frequency.setValueAtTime(783.99, audioCtx.currentTime + 0.2); // G5
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'incorrect') {
+                    osc.type = 'triangle';
+                    osc.frequency.setValueAtTime(130.81, audioCtx.currentTime); // C3
+                    osc.frequency.setValueAtTime(110.00, audioCtx.currentTime + 0.15); // A2
+                    gain.gain.setValueAtTime(0.15, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.4);
+                } else if (type === 'click') {
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(900, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                    gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                    osc.start();
+                    osc.stop(audioCtx.currentTime + 0.05);
+                }
+            } catch (e) {
+                console.log("Audio Context no soportado aún.");
+            }
+        }
+
+        // --- 4. Mezclador No-Repetitivo (Fisher-Yates) ---
+        function shuffle(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- 5. Inicialización de la Aplicación (Ruteo por URL) ---
+        window.onload = function() {
+            const params = new URLSearchParams(window.location.search);
+            const urlRole = params.get("role");
+            const urlPin = params.get("pin");
+
+            if (urlRole === "buzzer" && urlPin) {
+                // Modo Participante (Pulsador Móvil)
+                role = "buzzer";
+                gamePin = urlPin;
+                document.getElementById("buzzer-layout").classList.remove("hidden");
+                document.getElementById("buzzer-pin-input").value = gamePin;
+                initializeBuzzerSyncChannel();
+            } else {
+                // Modo Controlador Principal (Docente)
+                role = "board";
+                gamePin = Math.floor(1000 + Math.random() * 9000).toString(); // Generar PIN aleatorio
+                document.getElementById("board-layout").classList.remove("hidden");
+                document.getElementById("board-pin-display").innerText = gamePin;
+                document.getElementById("welcome-pin-display").innerText = gamePin;
+
+                // Generar QR Dinámico que apunta a esta URL para móvil
+                const currentUrl = window.location.origin + window.location.pathname;
+                const buzzerUrl = `${currentUrl}?role=buzzer&pin=${gamePin}`;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&color=0f172a&data=${encodeURIComponent(buzzerUrl)}`;
+                document.getElementById("welcome-qr-image").src = qrApiUrl;
+
+                initializeBoardSyncChannel();
+            }
+        };
+
+        // --- 6. Sincronización a través de ntfy.sh (SSE y POST) ---
+        function initializeBoardSyncChannel() {
+            const topic = `duelo_complejidad_${gamePin}`;
+            if (eventSourceConnection) eventSourceConnection.close();
+
+            eventSourceConnection = new EventSource(`https://ntfy.sh/${topic}/sse`);
+            eventSourceConnection.onmessage = (event) => {
+                try {
+                    const payload = JSON.parse(event.data);
+                    const msg = JSON.parse(payload.message);
+                    if (msg && msg.event === "buzz") {
+                        handleRemoteBuzz(msg.team);
+                    } else if (msg && msg.event === "reset") {
+                        handleRemoteReset();
+                    }
+                } catch (e) {
+                    // Ignorar mensajes no formateados o pings de ntfy
+                }
+            };
+        }
+
+        function initializeBuzzerSyncChannel() {
+            const topic = `duelo_complejidad_${gamePin}`;
+            if (eventSourceConnection) eventSourceConnection.close();
+
+            eventSourceConnection = new EventSource(`https://ntfy.sh/${topic}/sse`);
+            eventSourceConnection.onmessage = (event) => {
+                try {
+                    const payload = JSON.parse(event.data);
+                    const msg = JSON.parse(payload.message);
+                    if (msg && msg.event === "next_question") {
+                        resetMobileBuzzerState();
+                    }
+                } catch (e) {
+                    // Ignorar pings
+                }
+            };
+        }
+
+        // --- 7. Eventos de Control de la Consola Principal ---
+        function handleRemoteBuzz(team) {
+            if (isQuestionResolved || activeBuzzerState) return;
+            playSound('buzz');
+            
+            activeBuzzerState = true;
+            selectedBuzzerTeam = team;
+            document.getElementById('btn-physical-buzz').disabled = true;
+            document.getElementById('btn-physical-buzz').classList.add('opacity-50');
+
+            // Habilitar botones lógicos de la grilla
+            const options = ['V-V', 'V-F', 'F-V', 'F-F'];
+            options.forEach(opt => {
+                const btn = document.getElementById(`opt-${opt}`);
+                if (!disabledOptions.has(opt)) {
+                    btn.disabled = false;
+                }
+            });
+
+            updateStateDisplay();
+        }
+
+        function handleRemoteReset() {
+            // Permitir reset remoto si fuese necesario en futuras actualizaciones
+        }
+
+        function registerManualBuzzer() {
+            if (isQuestionResolved || activeBuzzerState) return;
+            // Registrar pulsación manual con un equipo genérico de "Duelo"
+            handleRemoteBuzz("Facilitador");
+        }
+
+        // --- 8. Lógica del Juego de Mesa (Board) ---
+        function startGame() {
+            playSound('click');
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('header-progress').classList.remove('hidden');
+            restartGame();
+        }
+
+        function backToMenu() {
+            playSound('click');
+            document.getElementById('welcome-screen').classList.remove('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('header-progress').classList.add('hidden');
+        }
+
+        function restartGame() {
+            currentQuestionList = shuffle([...rawPremises]);
+            activeQuestionIndex = 0;
+            loadQuestion(0);
+        }
+
+        function loadQuestion(index) {
+            if (index >= currentQuestionList.length) {
+                restartGame();
+                return;
+            }
+
+            isQuestionResolved = false;
+            activeBuzzerState = false;
+            currentAttempt = 1;
+            disabledOptions.clear();
+
+            document.getElementById('justification-panel').classList.add('hidden');
+            document.getElementById('btn-reveal').disabled = true;
+
+            const q = currentQuestionList[index];
+            
+            // Textos legibles en tarjetas gigantes
+            document.getElementById('concept-number').innerText = `PREGUNTA #${index + 1} DE 10`;
+            document.getElementById('concept-title').innerText = q.concept;
+            document.getElementById('premise-1-text').innerText = q.p1;
+            document.getElementById('premise-2-text').innerText = q.p2;
+            
+            // Cargar desglose de justificación
+            document.getElementById('justification-p1').innerText = q.p1Explanation;
+            document.getElementById('justification-p2').innerText = q.p2Explanation;
+
+            // Restablecer estilos de las opciones de resolución
+            const options = ['V-V', 'V-F', 'F-V', 'F-F'];
+            options.forEach(opt => {
+                const btn = document.getElementById(`opt-${opt}`);
+                btn.disabled = true; 
+                btn.className = "group relative bg-slate-900 hover:bg-slate-850 disabled:hover:bg-slate-900 text-slate-100 disabled:opacity-50 border-2 border-slate-800 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 cursor-pointer active:scale-95";
+            });
+
+            document.getElementById('btn-physical-buzz').disabled = false;
+            document.getElementById('btn-physical-buzz').classList.remove('opacity-50');
+
+            // Emitir evento para reiniciar los pulsadores móviles de los participantes
+            const topic = `duelo_complejidad_${gamePin}`;
+            fetch(`https://ntfy.sh/${topic}`, {
+                method: 'POST',
+                body: JSON.stringify({ event: "next_question" })
+            }).catch(e => console.log("Fallo de red en envío"));
+
+            updateStateDisplay();
+            updateProgressHeader();
+        }
+
+        function chooseOption(selectedOption) {
+            if (isQuestionResolved || !activeBuzzerState) return;
+
+            const q = currentQuestionList[activeQuestionIndex];
+            const isCorrect = (selectedOption === q.correct);
+            const btn = document.getElementById(`opt-${selectedOption}`);
+
+            if (isCorrect) {
+                // Acierto inmediato
+                playSound('correct');
+                btn.className = "group relative bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 correct-glow";
+                resolveRonda(true);
+            } else {
+                // Fallo del equipo actual
+                playSound('incorrect');
+                btn.className = "group relative bg-red-950/80 text-red-100 border-2 border-red-500 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 opacity-80 transition-all duration-150 shake";
+                btn.disabled = true;
+                disabledOptions.add(selectedOption);
+
+                if (currentAttempt === 1) {
+                    // Activación de la regla de rebote
+                    currentAttempt = 2;
+                    const options = ['V-V', 'V-F', 'F-V', 'F-F'];
+                    options.forEach(opt => {
+                        const b = document.getElementById(`opt-${opt}`);
+                        if (!disabledOptions.has(opt)) {
+                            b.disabled = false;
+                        }
+                    });
+                    updateStateDisplay();
+                } else {
+                    // Ambos fallaron el duelo
+                    resolveRonda(false);
+                }
+            }
+        }
+
+        function resolveRonda(completedSuccessfully) {
+            isQuestionResolved = true;
+            blockAllOptions();
+            document.getElementById('btn-reveal').disabled = false;
+            document.getElementById('justification-panel').classList.remove('hidden');
+
+            const q = currentQuestionList[activeQuestionIndex];
+            const correctBtn = document.getElementById(`opt-${q.correct}`);
+            
+            // Destacar combinación ganadora
+            correctBtn.className = "group relative bg-emerald-950/80 text-emerald-100 border-2 border-emerald-500 rounded-2xl p-5 flex flex-col items-center justify-center gap-2 transition-all duration-150 correct-glow";
+            correctBtn.disabled = true;
+
+            const display = document.getElementById('turn-text');
+            const ping = document.getElementById('turn-ping');
+
+            if (completedSuccessfully) {
+                ping.className = "w-3.5 h-3.5 rounded-full bg-emerald-500";
+                display.innerHTML = `🏆 <span class="text-emerald-400 font-bold uppercase tracking-wider">Duelo Cerrado:</span> El equipo resolvió correctamente el concepto de Morin.`;
+            } else {
+                ping.className = "w-3.5 h-3.5 rounded-full bg-red-500";
+                display.innerHTML = `❌ <span class="text-red-500 font-bold uppercase tracking-wider">Duelo Fallido:</span> Ambos equipos agotaron sus opciones lógicas de respuesta.`;
+            }
+        }
+
+        function blockAllOptions() {
+            const options = ['V-V', 'V-F', 'F-V', 'F-F'];
+            options.forEach(opt => {
+                document.getElementById(`opt-${opt}`).disabled = true;
+            });
+            document.getElementById('btn-physical-buzz').disabled = true;
+            document.getElementById('btn-physical-buzz').classList.add('opacity-50');
+        }
+
+        function updateStateDisplay() {
+            const display = document.getElementById('turn-text');
+            const ping = document.getElementById('turn-ping');
+
+            if (!activeBuzzerState) {
+                ping.className = "w-3.5 h-3.5 rounded-full bg-amber-500 animate-pulse";
+                display.innerHTML = `⏳ <span class="font-extrabold text-white">ESTADO INCIAL:</span> Esperando la pulsación del botón rojo móvil en un teléfono...`;
+            } else {
+                if (currentAttempt === 1) {
+                    ping.className = "w-3.5 h-3.5 rounded-full bg-red-500 animate-ping";
+                    display.innerHTML = `⚡ <span class="font-extrabold text-red-400 uppercase tracking-widest">[EQUIPO ${selectedBuzzerTeam.toUpperCase()}]</span> ha ganado el botón rojo y tiene el derecho de responder.`;
+                } else {
+                    ping.className = "w-3.5 h-3.5 rounded-full bg-blue-500 animate-ping";
+                    display.innerHTML = `🔵 <span class="font-extrabold text-amber-400 uppercase tracking-widest">¡REBOTE!</span> Oportunidad de robo de puntos con las 3 opciones lógicas restantes para el oponente.`;
+                }
+            }
+        }
+
+        function updateProgressHeader() {
+            const text = document.getElementById('header-progress-text');
+            text.innerText = `${activeQuestionIndex + 1} / 10`;
+        }
+
+        function revealJustification() {
+            playSound('click');
+            const panel = document.getElementById('justification-panel');
+            panel.classList.toggle('hidden');
+        }
+
+        function loadNextQuestion() {
+            playSound('click');
+            activeQuestionIndex++;
+            loadQuestion(activeQuestionIndex);
+        }
+
+
+        // --- 9. Funciones del Pulsador Móvil (Buzzer) ---
+        function selectTeam(teamName) {
+            playSound('click');
+            selectedBuzzerTeam = teamName;
+            
+            // Restablecer estilos de selección
+            const teams = ['Oros', 'Copas', 'Espadas', 'Bastos'];
+            teams.forEach(t => {
+                document.getElementById(`team-${t}`).className = "p-3 border border-slate-200 hover:border-slate-400 rounded-xl flex items-center justify-center gap-2 font-bold transition text-xs";
+            });
+
+            // Destacar botón seleccionado
+            document.getElementById(`team-${teamName}`).className = "p-3 border-2 border-red-500 bg-red-50 rounded-xl flex items-center justify-center gap-2 font-black transition text-xs text-red-600";
+        }
+
+        function confirmBuzzerConnection() {
+            if (!selectedBuzzerTeam) {
+                // Simplemente ignorar si no se seleccionó palo
+                return;
+            }
+            playSound('click');
+            document.getElementById("buzzer-setup").classList.add("hidden");
+            document.getElementById("buzzer-active").classList.remove("hidden");
+            document.getElementById("buzzer-team-tag").innerText = `EQUIPO: ${selectedBuzzerTeam.toUpperCase()}`;
+        }
+
+        function triggerMobileBuzz() {
+            if (!selectedBuzzerTeam || !gamePin) return;
+            playSound('click');
+
+            // Enviar evento de pulsado en tiempo real mediante POST a ntfy
+            const topic = `duelo_complejidad_${gamePin}`;
+            fetch(`https://ntfy.sh/${topic}`, {
+                method: 'POST',
+                body: JSON.stringify({
+                    event: "buzz",
+                    team: selectedBuzzerTeam,
+                    timestamp: Date.now()
+                })
+            }).then(() => {
+                // Deshabilitar temporalmente el botón del participante para evitar pulsados repetitivos
+                const giantBtn = document.getElementById("giant-buzzer-button");
+                giantBtn.disabled = true;
+                giantBtn.className = "w-56 h-56 rounded-full bg-slate-200 border-8 border-slate-300 text-slate-400 text-3xl font-black uppercase cursor-not-allowed flex items-center justify-center";
+                document.getElementById("buzzer-screen-status").innerText = "¡PULSACIÓN ENVIADA! Verifiquen la pantalla del salón...";
+            }).catch(e => {
+                document.getElementById("buzzer-screen-status").innerText = "Fallo de conexión. Intenten presionar nuevamente.";
+            });
+        }
+
+        function resetMobileBuzzerState() {
+            // Habilitar de nuevo el botón rojo gigante del participante para la nueva pregunta
+            const giantBtn = document.getElementById("giant-buzzer-button");
+            giantBtn.disabled = false;
+            giantBtn.className = "w-56 h-56 rounded-full bg-gradient-to-b from-red-500 to-red-700 border-8 border-slate-100 shadow-2xl active:scale-95 transition-transform duration-75 flex items-center justify-center text-white text-3xl font-black uppercase cursor-pointer relative z-10 select-none";
+            document.getElementById("buzzer-screen-status").innerText = "Sincronizado. ¡Listos para la siguiente pregunta!";
+        }
+    </script>
+</body>
+</html>
